@@ -1,2 +1,5 @@
 *.jpg filter=lfs diff=lfs merge=lfs -text
 *.mp4 filter=lfs diff=lfs merge=lfs -text
+
+# Web-delivered copies must NOT be LFS pointers (GitHub Pages needs real bytes)
+images_web/** -filter -diff -merge -text
