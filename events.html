@@ -100,18 +100,18 @@
     }
 
     /* LIGHTBOX */
-    .lightbox { position:fixed; inset:0; background:rgba(20,12,6,0.88); z-index:300; display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity 0.3s; backdrop-filter:blur(8px); padding:20px; }
+    .lightbox { position:fixed; inset:0; background:rgba(20,12,6,0.88); z-index:300; display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity 0.3s; backdrop-filter:blur(8px); padding:8px; }
     .lightbox.active { opacity:1; pointer-events:all; }
-    .lightbox-inner { position:relative; max-width:900px; width:100%; }
-    .lightbox-inner.media-only { max-width:min(1200px,96vw); }
-    .lightbox-card { background:var(--brown); border-radius:20px; overflow:hidden; display:flex; max-height:88vh; }
+    .lightbox-inner { position:relative; max-width:min(1200px,96vw); width:100%; max-height:96vh; }
+    .lightbox-inner.media-only { max-width:98vw; width:98vw; max-height:96vh; }
+    .lightbox-card { background:var(--brown); border-radius:20px; overflow:hidden; display:flex; max-height:96vh; }
 
     /* Lightbox image / slideshow panel */
-    .lightbox-img { flex:0 0 48%; position:relative; overflow:hidden; background:#1a1008; min-height:320px; }
+    .lightbox-img { flex:0 0 56%; position:relative; overflow:hidden; background:#000; min-height:320px; }
     .lb-slide { position:absolute; inset:0; opacity:0; transition:opacity 0.45s ease; }
     .lb-slide.active { opacity:1; }
-    .lb-slide img  { width:100%; height:100%; object-fit:cover; display:block; }
-    .lb-slide video { width:100%; height:100%; object-fit:cover; display:block; }
+    .lb-slide img  { width:100%; height:100%; object-fit:contain; display:block; background:#000; }
+    .lb-slide video { width:100%; height:100%; object-fit:contain; display:block; background:#000; }
 
     /* Slide nav */
     .lb-prev, .lb-next {
@@ -129,7 +129,7 @@
     .lb-dot.active { background:#fff; }
 
     /* Media-only lightbox (no text panel) */
-    .lightbox-card.media-only .lightbox-img { flex:1 1 100%; border-radius:20px; min-height:min(82vh,760px); }
+    .lightbox-card.media-only .lightbox-img { flex:1 1 100%; border-radius:20px; min-height:96vh; }
     .lightbox-card.media-only .lightbox-body { display:none; }
 
     /* Lightbox body */
@@ -164,7 +164,7 @@
       .masonry-wrap { padding:32px 20px 80px; }
       .page-hero { padding:110px 28px 48px; }
       .lightbox-card { flex-direction:column; }
-      .lightbox-img { flex:none; height:260px; min-height:unset; }
+      .lightbox-img { flex:none; height:62vh; min-height:unset; }
     }
     @media (max-width:520px) {
       .masonry { columns:1; }
@@ -488,7 +488,7 @@ function buildLbSlides(media) {
     slide.className = 'lb-slide' + (i === 0 ? ' active' : '');
     slide.innerHTML = m.type === 'img'
       ? `<img src="${m.src}" alt=""/>`
-      : `<video src="${m.src}" autoplay muted loop playsinline preload="auto"></video>`;
+      : `<video src="${m.src}" controls playsinline preload="metadata"></video>`;
     imgEl.appendChild(slide);
   });
 
@@ -525,6 +525,10 @@ function lbGoSlide(n) {
   lbCurSlide = (n + slides.length) % slides.length;
   if (slides[lbCurSlide]) slides[lbCurSlide].classList.add('active');
   if (dots[lbCurSlide])   dots[lbCurSlide].classList.add('active');
+  slides.forEach((slide, idx) => {
+    const vid = slide.querySelector('video');
+    if (vid && idx !== lbCurSlide) vid.pause();
+  });
 }
 
 function lbSlideMove(d) { lbGoSlide(lbCurSlide + d); }
