@@ -103,6 +103,7 @@
     .lightbox { position:fixed; inset:0; background:rgba(20,12,6,0.88); z-index:300; display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity 0.3s; backdrop-filter:blur(8px); padding:20px; }
     .lightbox.active { opacity:1; pointer-events:all; }
     .lightbox-inner { position:relative; max-width:900px; width:100%; }
+    .lightbox-inner.media-only { max-width:min(1200px,96vw); }
     .lightbox-card { background:var(--brown); border-radius:20px; overflow:hidden; display:flex; max-height:88vh; }
 
     /* Lightbox image / slideshow panel */
@@ -128,7 +129,7 @@
     .lb-dot.active { background:#fff; }
 
     /* Media-only lightbox (no text panel) */
-    .lightbox-card.media-only .lightbox-img { flex:1 1 100%; border-radius:20px; }
+    .lightbox-card.media-only .lightbox-img { flex:1 1 100%; border-radius:20px; min-height:min(82vh,760px); }
     .lightbox-card.media-only .lightbox-body { display:none; }
 
     /* Lightbox body */
@@ -534,8 +535,12 @@ function lbSlideMove(d) { lbGoSlide(lbCurSlide + d); }
 function openLb(ev) {
   buildLbSlides(ev.media);
 
+  const isSingleMedia = (ev.media || []).length <= 1;
   const hasText = ev.title || ev.desc || ev.date || ev.location;
-  document.getElementById('lightboxCard').classList.toggle('media-only', !hasText);
+  const mediaOnly = isSingleMedia || !hasText;
+
+  document.getElementById('lightboxCard').classList.toggle('media-only', mediaOnly);
+  document.querySelector('#lightbox .lightbox-inner').classList.toggle('media-only', mediaOnly);
 
   document.getElementById('lbTag').textContent    = ev.upcoming ? 'Upcoming Event' : (ev.categories.includes('events') ? 'Past Event' : 'Gallery');
   document.getElementById('lbTitle').textContent  = ev.title  || '';

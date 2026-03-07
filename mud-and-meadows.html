@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
@@ -35,7 +35,7 @@
     .mobile-menu a:hover { color:var(--gold); }
 
     /* HERO */
-    .hero { min-height:100vh; background:var(--cream); display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative; overflow:hidden; padding-top:90px; }
+    .hero { min-height:100vh; background:var(--cream); display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative; overflow:hidden; padding-top:110px; }
     .botanical { position:absolute; opacity:0.32; pointer-events:none; z-index:2; }
     .botanical-left  { left:32px; top:110px; width:170px; }
     .botanical-right { right:32px; top:110px; width:170px; transform:scaleX(-1); }
@@ -43,10 +43,10 @@
     .photo-strip-outer { position:relative; z-index:2; }
     @keyframes fadeUp { from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);} }
 
-    /* IVY canvas — absolute inside .hero, behind all content */
+    /* IVY canvas â€” absolute inside .hero, behind all content */
     #ivyCanvas { position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:1; }
     .hero-title-wrap { position:relative; display:inline-block; margin-bottom:24px; }
-    .hero-title { font-family:'Cormorant Garamond',serif; font-size:clamp(2.8rem,8vw,6.2rem); font-weight:300; letter-spacing:0.12em; color:var(--brown); line-height:1; position:relative; z-index:1; }
+    .hero-title { font-family:'Cormorant Garamond',serif; font-size:clamp(2.2rem,7vw,6.2rem); font-weight:300; letter-spacing:clamp(0.04em,0.8vw,0.12em); color:var(--brown); line-height:1.06; position:relative; z-index:1; text-wrap:balance; }
 
 
     .hero-logo-img { width: clamp(260px, 38vw, 480px); height: auto; display:block; margin:0 auto; position:relative; z-index:1; }
@@ -54,7 +54,7 @@
     .hero-btn { display:inline-block; padding:13px 36px; border:1.5px solid var(--gold); background:var(--light-gold); color:var(--brown); text-decoration:none; font-size:0.78rem; letter-spacing:0.18em; text-transform:uppercase; font-weight:400; border-radius:40px; transition:background 0.3s,color 0.3s,transform 0.2s; }
     .hero-btn:hover { background:var(--gold); color:#fff; transform:translateY(-2px); }
 
-    /* PHOTO STRIP — centered with gaps and rounded corners */
+    /* PHOTO STRIP â€” centered with gaps and rounded corners */
     .photo-strip-outer { width:100%; padding:48px 56px 0; animation:fadeUp 1.2s ease 0.3s both; }
     .photo-strip { display:grid; grid-template-columns:2fr 1fr 1fr 2fr; gap:10px; height:350px; }
     .photo-strip-item { overflow:hidden; border-radius:16px; position:relative; }
@@ -87,11 +87,11 @@
     .event-row { gap:100px; }
     .event-text { flex:1; padding:0; }
     .event-text .etag { font-size:0.68rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--gold); font-weight:500; margin-bottom:12px; display:flex; align-items:center; gap:8px; }
-    .event-text .etag::before { content:'✦'; font-size:0.7rem; }
+    .event-text .etag::before { content:'âœ¦'; font-size:0.7rem; }
     .event-text h3 { font-family:'Cormorant Garamond',serif; font-size:clamp(1.6rem,3vw,2.2rem); font-weight:400; margin-bottom:20px; line-height:1.2; }
     .event-text ul { list-style:none; display:flex; flex-direction:column; gap:10px; }
     .event-text ul li { font-size:0.87rem; font-weight:300; color:var(--mid-brown); display:flex; align-items:flex-start; gap:12px; line-height:1.6; }
-    .event-text ul li::before { content:'✓'; color:var(--gold); font-size:0.75rem; margin-top:3px; flex-shrink:0; }
+    .event-text ul li::before { content:'âœ“'; color:var(--gold); font-size:0.75rem; margin-top:3px; flex-shrink:0; }
     .divider-ornament { text-align:center; margin:0 0 72px; color:var(--light-gold); font-size:1.1rem; letter-spacing:0.5em; }
 
     /* OVERLAY */
@@ -113,7 +113,7 @@
     }
     .overlay.active .expanded-card { transform: perspective(1000px) rotateY(0deg) scale(1); }
 
-    /* SLIDESHOW — left column, fixed width, full height */
+    /* SLIDESHOW â€” left column, fixed width, full height */
     .slideshow { position:relative; flex:0 0 52%; height:100%; background:#1a1008; overflow:hidden; }
     .slide { position:absolute; inset:0; opacity:0; transition:opacity 0.55s ease; }
     .slide.active { opacity:1; }
@@ -127,7 +127,7 @@
     .slide-dot { width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,0.38); cursor:pointer; transition:background 0.2s; border:none; padding:0; }
     .slide-dot.active { background:#fff; }
 
-    /* TEXT — right column, scrollable */
+    /* TEXT â€” right column, scrollable */
     .expanded-body {
       flex: 1;
       padding: 40px 38px 40px 42px;
@@ -181,6 +181,9 @@
       nav { padding:14px 24px; }
       .nav-links { display:none; }
       .hamburger { display:flex; }
+      .hero { min-height:auto; padding-top:128px; padding-bottom:34px; }
+      .hero-title { font-size:clamp(2rem,10vw,4rem); letter-spacing:0.05em; }
+      .hero-sub { max-width:40ch; margin-left:auto; margin-right:auto; }
       .photo-strip-outer { padding:28px 20px 0; }
       .photo-strip { grid-template-columns:1fr 1fr; height:220px; gap:7px; }
       .events-section { padding:64px 20px; }
@@ -194,11 +197,13 @@
     }
     @media (max-width:520px) {
       .botanical-left,.botanical-right { display:none; }
+      .hero { padding-top:118px; }
+      .hero-title { font-size:clamp(1.8rem,12vw,2.8rem); letter-spacing:0.04em; line-height:1.08; }
       .photo-strip { grid-template-columns:1fr 1fr; height:170px; gap:5px; }
       .photo-strip-outer { padding:20px 12px 0; }
       .cal-day { min-height:42px; }
       .cal-event-pill { display:none; }
-      .cal-day.has-event .cal-day-num::after { content:' •'; color:var(--gold); }
+      .cal-day.has-event .cal-day-num::after { content:' â€¢'; color:var(--gold); }
     }
 
     /* CONTACT MODAL */
@@ -289,16 +294,16 @@
       <div class="click-hint"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg><span>View details</span></div>
     </div>
     <div class="event-text">
-      <div class="etag">Past Event · October 2025</div>
+      <div class="etag">Past Event Â· October 2025</div>
       <h3>Flower Farm Winery<br>&amp; Pottery Painting</h3>
       <ul>
         <li>Paint your own ceramic house-shaped vase at the beautiful Hope Flower Farm &amp; Winery.</li>
-        <li>Complimentary glass of wine included — sip, create, and soak in the farm views.</li>
+        <li>Complimentary glass of wine included â€” sip, create, and soak in the farm views.</li>
         <li>A cozy fall afternoon of creativity surrounded by flowers.</li>
       </ul>
     </div>
   </div>
-  <div class="divider-ornament">✦ &nbsp; ✦ &nbsp; ✦</div>
+  <div class="divider-ornament">âœ¦ &nbsp; âœ¦ &nbsp; âœ¦</div>
 
   <div class="event-row reverse" data-scroll>
     <div class="event-img-wrap" onclick="openCard(1)">
@@ -306,16 +311,16 @@
       <div class="click-hint"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg><span>View details</span></div>
     </div>
     <div class="event-text">
-      <div class="etag">Past Event · 2026</div>
+      <div class="etag">Past Event Â· 2026</div>
       <h3>Tumbler Painting at<br>The Sweet Little Shop</h3>
       <ul>
-        <li><span>Paint your own ceramic tumbler mug and take it home — guided from blank to finished piece.</span></li>
-        <li><span>Held inside the adorable <em>@the_sweetlittleshop</em> boutique — browse and shop all evening.</span></li>
+        <li><span>Paint your own ceramic tumbler mug and take it home â€” guided from blank to finished piece.</span></li>
+        <li><span>Held inside the adorable <em>@the_sweetlittleshop</em> boutique â€” browse and shop all evening.</span></li>
         <li><span>Cupcakes from <em>@sweetpoetrycakery</em> included for every guest.</span></li>
       </ul>
     </div>
   </div>
-  <div class="divider-ornament">✦ &nbsp; ✦ &nbsp; ✦</div>
+  <div class="divider-ornament">âœ¦ &nbsp; âœ¦ &nbsp; âœ¦</div>
 
   <div class="event-row" data-scroll>
     <div class="event-img-wrap" onclick="openCard(2)">
@@ -323,16 +328,16 @@
       <div class="click-hint"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg><span>View details</span></div>
     </div>
     <div class="event-text">
-      <div class="etag">Past Event · February 2026</div>
+      <div class="etag">Past Event Â· February 2026</div>
       <h3>Galentine's<br>Pottery Party</h3>
       <ul>
         <li><span>Paint your own ceramic martini glass with <em>@mud_and_meadows</em>.</span></li>
         <li><span>Delicious drinks from <em>@tipsy.spirits_</em> all night long.</span></li>
-        <li><span>Held at <em>@southernwindsomd</em> — grab your girlfriends &amp; make it a night.</span></li>
+        <li><span>Held at <em>@southernwindsomd</em> â€” grab your girlfriends &amp; make it a night.</span></li>
       </ul>
     </div>
   </div>
-  <div class="divider-ornament">✦ &nbsp; ✦ &nbsp; ✦</div>
+  <div class="divider-ornament">âœ¦ &nbsp; âœ¦ &nbsp; âœ¦</div>
 
   <div class="event-row reverse" data-scroll>
     <div class="event-img-wrap" onclick="openCard(3)">
@@ -340,10 +345,10 @@
       <div class="click-hint"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg><span>View details</span></div>
     </div>
     <div class="event-text">
-      <div class="etag">Upcoming Event · March 13, 2026</div>
+      <div class="etag">Upcoming Event Â· March 13, 2026</div>
       <h3>Shamrock &amp; Smoke<br>Hat Burning Event</h3>
       <ul>
-        <li><span>Design your own flat brim hat — templates, ribbons &amp; charms all included.</span></li>
+        <li><span>Design your own flat brim hat â€” templates, ribbons &amp; charms all included.</span></li>
         <li><span>One Mullys drink on us with your ticket. Must be 21+.</span></li>
         <li><span>Sip, create, and spend the night laughing with your favorite people.</span></li>
       </ul>
@@ -354,7 +359,7 @@
 <!-- OVERLAY + SLIDESHOW -->
 <div class="overlay" id="overlay" onclick="handleOverlayClick(event)">
   <div class="overlay-inner">
-    <button class="close-btn" onclick="closeCard()">✕</button>
+    <button class="close-btn" onclick="closeCard()">âœ•</button>
     <div class="expanded-card">
       <div class="slideshow" id="slideshow">
         <button class="slide-prev" onclick="event.stopPropagation();slideMove(-1)">&#8249;</button>
@@ -375,9 +380,9 @@
 <!-- CONTACT MODAL -->
 <div class="contact-modal-overlay" id="contactModal" onclick="handleContactOverlay(event)">
   <div class="contact-modal">
-    <button class="contact-close" onclick="closeContact()">✕</button>
+    <button class="contact-close" onclick="closeContact()">âœ•</button>
     <h3>Get in Touch</h3>
-    <p>We'd love to hear from you — reach out however works best.</p>
+    <p>We'd love to hear from you â€” reach out however works best.</p>
     <div class="contact-options">
       <a href="mailto:shannonboyle205@gmail.com" class="contact-opt contact-opt-email">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,4 12,13 22,4"/></svg>
@@ -394,19 +399,19 @@
 <!-- FOOTER -->
 <footer>
   <div class="f-logo">Mud & Meadows</div>
-  <div class="f-sub">Pop-up pottery, crafts & florals · DMV</div>
+  <div class="f-sub">Pop-up pottery, crafts & florals Â· DMV</div>
   <ul class="f-links">
     <li><a href="#">About Us</a></li><li><a href="events.html">Gallery</a></li>
     <li><a href="calendar.html">Calendar</a></li><li><a href="#" onclick="openContact(event)">Contact</a></li>
   </ul>
   <div class="f-socials"><a href="https://www.instagram.com/mud_and_meadows/" target="_blank" rel="noopener" class="f-social-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg> @mud_and_meadows</a></div>
-  <div class="f-copy">© 2025 Mud & Meadows · All rights reserved</div>
+  <div class="f-copy">Â© 2025 Mud & Meadows Â· All rights reserved</div>
 </footer>
 
 <script>
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-// IVY ANIMATION — full-screen overlay
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
+// IVY ANIMATION â€” full-screen overlay
+// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
 (function() {
   const canvas = document.getElementById('ivyCanvas');
   const ctx    = canvas.getContext('2d');
@@ -462,7 +467,7 @@
       const r = curlR * (1 - t * 0.75);
       pts.push([pivX + Math.cos(a) * r, pivY + Math.sin(a) * r]);
     }
-    // stemT: the t value (0–1) where the curl begins in the full pts array
+    // stemT: the t value (0â€“1) where the curl begins in the full pts array
     // Leaves must only appear at t < stemT * 0.88 (leave a small gap before curl)
     pts._stemT = (stemPointCount - 1) / (pts.length - 1) * 0.88;
     return pts;
@@ -535,11 +540,11 @@
   function buildVines() {
     const W = canvas.width, H = canvas.height;
     vines = [
-      // Left side — 3 vines at different heights
+      // Left side â€” 3 vines at different heights
       { pts: buildVine(0, H * rnd(0.18, 0.30), rnd(-0.15, 0.18),           1),  progress:0, delay:0,     grownLeaves:[] },
       { pts: buildVine(0, H * rnd(0.38, 0.50), rnd(-0.08, 0.22),           1),  progress:0, delay:5500,  grownLeaves:[] },
       { pts: buildVine(0, H * rnd(0.55, 0.68), rnd(-0.05, 0.20),           1),  progress:0, delay:10500, grownLeaves:[] },
-      // Right side — 3 vines at different heights
+      // Right side â€” 3 vines at different heights
       { pts: buildVine(W, H * rnd(0.15, 0.28), Math.PI + rnd(-0.15, 0.15), -1), progress:0, delay:2800,  grownLeaves:[] },
       { pts: buildVine(W, H * rnd(0.38, 0.52), Math.PI + rnd(-0.10, 0.18), -1), progress:0, delay:8000,  grownLeaves:[] },
       { pts: buildVine(W, H * rnd(0.58, 0.70), Math.PI + rnd(-0.08, 0.15), -1), progress:0, delay:13000, grownLeaves:[] },
@@ -562,10 +567,10 @@
     const pts      = v.pts;
     const STEPS    = 280;
     const end      = Math.floor(STEPS * v.progress);
-    // Use the baked stem-end t value — leaves NEVER go past this
+    // Use the baked stem-end t value â€” leaves NEVER go past this
     const LEAF_MAX = pts._stemT;
 
-    // â”€â”€ Stem â”€â”€
+    // Ã¢â€â‚¬Ã¢â€â‚¬ Stem Ã¢â€â‚¬Ã¢â€â‚¬
     ctx.beginPath();
     const p0 = cr(pts, 0);
     ctx.moveTo(p0[0], p0[1]);
@@ -580,12 +585,12 @@
     ctx.lineJoin    = 'round';
     ctx.stroke();
 
-    // â”€â”€ Leaves strictly on stem only, never on curl â”€â”€
+    // Ã¢â€â‚¬Ã¢â€â‚¬ Leaves strictly on stem only, never on curl Ã¢â€â‚¬Ã¢â€â‚¬
     for (let i = 0; i < MAX_LEAVES; i++) {
       // Space leaves evenly across the stem portion only
       const tBase = ((i + 1) / (MAX_LEAVES + 1)) * LEAF_MAX;
 
-      // Vine hasn't reached this leaf yet — stop checking further slots
+      // Vine hasn't reached this leaf yet â€” stop checking further slots
       if (tBase > v.progress) break;
 
       // Bake leaf position/angle once when first reached
@@ -636,9 +641,9 @@
   requestAnimationFrame(animate);
 })();
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
 // EVENT DATA
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
 const eventsData = [
   {
     title:'Flower Farm Winery & Pottery Painting',
@@ -647,8 +652,8 @@ const eventsData = [
       {type:'img',   src:'images_web/flower_farm_house.jpg'},
       {type:'img',   src:'images_web/farmpolo.jpg'},
     ],
-    desc:"Have you ever wanted to sip wine in a flower field while painting pottery? We made that happen at Hope Flower Farm & Winery — a cozy fall afternoon of creativity surrounded by blooms. Each guest painted their own ceramic house-shaped vase, enjoyed a complimentary glass of wine, and soaked in the beauty of the farm. Seats sold out — stay tuned for the next one!",
-    date:'ðŸ“… October 11, 2025 · 11:00 AM – 1:30 PM', location:'ðŸ“ Hope Flower Farm & Winery, DMV'
+    desc:"Have you ever wanted to sip wine in a flower field while painting pottery? We made that happen at Hope Flower Farm & Winery â€” a cozy fall afternoon of creativity surrounded by blooms. Each guest painted their own ceramic house-shaped vase, enjoyed a complimentary glass of wine, and soaked in the beauty of the farm. Seats sold out â€” stay tuned for the next one!",
+    date:'Ã°Å¸â€œâ€¦ October 11, 2025 Â· 11:00 AM â€“ 1:30 PM', location:'Ã°Å¸â€œÂ Hope Flower Farm & Winery, DMV'
   },
   {
     title:'Tumbler Painting at The Sweet Little Shop',
@@ -658,8 +663,8 @@ const eventsData = [
       {type:'img',   src:'images_web/tumblrCup.jpg'},
       {type:'video', src:'images_web/sweetlittleshop_tumbler.mp4'},
     ],
-    desc:"We had the most beautiful time painting at @the_sweetlittleshop — and if you haven't been, this shop is SO CUTE! Each guest painted their own ceramic tumbler mug to take home and enjoyed a cupcake from @sweetpoetrycakery, then shopped the rest of the night away. Stay tuned to see how they turn out — can't wait til next time!",
-    date:'ðŸ“… 2026', location:'ðŸ“ The Sweet Little Shop, DMV'
+    desc:"We had the most beautiful time painting at @the_sweetlittleshop â€” and if you haven't been, this shop is SO CUTE! Each guest painted their own ceramic tumbler mug to take home and enjoyed a cupcake from @sweetpoetrycakery, then shopped the rest of the night away. Stay tuned to see how they turn out â€” can't wait til next time!",
+    date:'Ã°Å¸â€œâ€¦ 2026', location:'Ã°Å¸â€œÂ The Sweet Little Shop, DMV'
   },
   {
     title:"Galentine's Pottery Party",
@@ -668,24 +673,24 @@ const eventsData = [
       {type:'img',   src:'images_web/galentines_PP1.jpg'},
       {type:'img',   src:'images_web/galentines_PP2.jpg'},
     ],
-    desc:"Come paint pottery with us and your Galentines! ðŸ¥°ðŸ’• Paint your own ceramic martini glass with @mud_and_meadows while you enjoy the most delicious drinks from @tipsy.spirits_ ðŸ¸ Spots are limited — grab your girlfriends and make it a night. Held at Southern Wind Boutique on February 12.",
-    date:'ðŸ“… February 12, 2026 · 6:00 PM – 9:00 PM', location:'ðŸ“ Southern Wind Boutique, DMV'
+    desc:"Come paint pottery with us and your Galentines! Ã°Å¸Â¥Â°Ã°Å¸â€™â€¢ Paint your own ceramic martini glass with @mud_and_meadows while you enjoy the most delicious drinks from @tipsy.spirits_ Ã°Å¸ÂÂ¸ Spots are limited â€” grab your girlfriends and make it a night. Held at Southern Wind Boutique on February 12.",
+    date:'Ã°Å¸â€œâ€¦ February 12, 2026 Â· 6:00 PM â€“ 9:00 PM', location:'Ã°Å¸â€œÂ Southern Wind Boutique, DMV'
   },
   {
-    title:'Shamrock & Smoke — Hat Burning Event',
+    title:'Shamrock & Smoke â€” Hat Burning Event',
     media:[
       {type:'video', src:'images_web/hatBurningVId.mp4'},
       {type:'video', src:'images_web/hats_video2.mp4'},
       {type:'img',   src:'images_web/hat_poster2.jpg'},
     ],
-    desc:"Cowgirl vibes only ðŸ¤Žâœ¨ Create your own custom hat, sip a drink, and spend the day laughing with your favorite people. Each ticket includes your own flat brim hat, design templates, ribbons, and charms — plus one Mullys drink on us! Tickets are in the bio. Must be 21+.",
-    date:'Friday, March 13, 2026 · 6:00 PM – 9:00 PM', location:'Southern Wind Boutique, 9375 Chesapeake St. #125, La Plata, MD'
+    desc:"Cowgirl vibes only Ã°Å¸Â¤Å½Ã¢Å“Â¨ Create your own custom hat, sip a drink, and spend the day laughing with your favorite people. Each ticket includes your own flat brim hat, design templates, ribbons, and charms â€” plus one Mullys drink on us! Tickets are in the bio. Must be 21+.",
+    date:'Friday, March 13, 2026 Â· 6:00 PM â€“ 9:00 PM', location:'Southern Wind Boutique, 9375 Chesapeake St. #125, La Plata, MD'
   },
 ];
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
 // SLIDESHOW
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
 let curSlide=0;
 
 function buildSlides(media) {
@@ -737,10 +742,10 @@ document.addEventListener('keydown',e=>{
   if(e.key==='ArrowRight')slideMove(1);
 });
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
 // CALENDAR
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-// â† Add your future events here
+// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
+// Ã¢â€ Â Add your future events here
 const calEventsData=[
   {date:'2026-03-15',title:'Spring Workshop'},
   {date:'2026-03-22',title:'Floral Pottery'},
@@ -780,9 +785,9 @@ function renderCal(){
 function calMove(d){calM+=d;if(calM>11){calM=0;calY++;}if(calM<0){calM=11;calY--;}renderCal();}
 renderCal();
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
 // MOBILE MENU & SCROLL REVEAL
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
 function toggleMenu(){
   document.getElementById('hamburger').classList.toggle('open');
   document.getElementById('mobileMenu').classList.toggle('open');
@@ -793,7 +798,7 @@ function openContact(e){e.preventDefault();document.getElementById('contactModal
 function closeContact(){document.getElementById('contactModal').classList.remove('active');document.body.style.overflow='';}
 function handleContactOverlay(e){if(e.target===document.getElementById('contactModal'))closeContact();}
 
-// Scroll reveal — only hides/animates elements that are genuinely below the fold
+// Scroll reveal â€” only hides/animates elements that are genuinely below the fold
 function initReveal() {
   const els = document.querySelectorAll('[data-scroll]');
   const obs = new IntersectionObserver(entries => {
@@ -812,7 +817,7 @@ function initReveal() {
       el.classList.add('will-animate');
       obs.observe(el);
     }
-    // Elements already in view are left alone — fully visible by default
+    // Elements already in view are left alone â€” fully visible by default
   });
 }
 
