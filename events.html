@@ -437,7 +437,7 @@ function renderGrid(filter) {
     item.style.animationDelay = (i * 0.06) + 's';
 
     const coverHtml = ev.cover.type === 'video'
-      ? `<video src="${ev.cover.src}" autoplay muted loop playsinline style="width:100%;object-fit:cover;display:block;"></video>`
+      ? `<video src="${ev.cover.src}" autoplay muted loop playsinline preload="auto" style="width:100%;object-fit:cover;display:block;"></video>`
       : `<img src="${ev.cover.src}" alt="${ev.title}"/>`;
 
     const badgeHtml = ev.upcoming
@@ -486,7 +486,7 @@ function buildLbSlides(media) {
     slide.className = 'lb-slide' + (i === 0 ? ' active' : '');
     slide.innerHTML = m.type === 'img'
       ? `<img src="${m.src}" alt=""/>`
-      : `<video src="${m.src}" autoplay muted loop playsinline></video>`;
+      : `<video src="${m.src}" autoplay muted loop playsinline preload="auto"></video>`;
     imgEl.appendChild(slide);
   });
 
