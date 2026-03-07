@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(unzip files.zip -d extracted)",
+      "Bash(xxd)"
+    ]
+  }
+}

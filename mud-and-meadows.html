@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mud & Meadows</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --cream: #f2ece2; --warm-white: #faf7f2; --brown: #3a2e26;
+      --mid-brown: #7a6a5a; --gold: #c9a97a; --light-gold: #e8d5b0; --green: #6b8f47;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Jost', sans-serif; background: var(--warm-white); color: var(--brown); overflow-x: hidden; }
+
+    /* NAV */
+    nav { position:fixed; top:0; left:0; right:0; z-index:100; display:flex; align-items:center; justify-content:space-between; padding:16px 48px; background:rgba(242,236,226,0.94); backdrop-filter:blur(8px); border-bottom:1px solid rgba(201,169,122,0.2); }
+    .nav-logo { display:flex; align-items:center; text-decoration:none; }
+    .nav-logo-img { height:90px; width:90px; object-fit:contain; display:block; }
+    .nav-links { display:flex; gap:40px; list-style:none; }
+    .nav-links a { text-decoration:none; font-size:0.8rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--brown); font-weight:300; transition:color 0.2s; position:relative; }
+    .nav-links a::after { content:''; position:absolute; bottom:-3px; left:0; right:0; height:1px; background:var(--gold); transform:scaleX(0); transition:transform 0.3s; }
+    .nav-links a:hover { color:var(--gold); }
+    .nav-links a:hover::after { transform:scaleX(1); }
+    .hamburger { display:none; flex-direction:column; gap:5px; cursor:pointer; background:none; border:none; padding:4px; }
+    .hamburger span { width:24px; height:1.5px; background:var(--brown); transition:all 0.3s; display:block; }
+    .hamburger.open span:nth-child(1) { transform:rotate(45deg) translate(4px,4px); }
+    .hamburger.open span:nth-child(2) { opacity:0; }
+    .hamburger.open span:nth-child(3) { transform:rotate(-45deg) translate(4px,-4px); }
+    .mobile-menu { display:none; position:fixed; inset:0; background:var(--cream); z-index:99; flex-direction:column; align-items:center; justify-content:center; gap:40px; }
+    .mobile-menu.open { display:flex; }
+    .mobile-menu a { font-family:'Cormorant Garamond',serif; font-size:2.4rem; text-decoration:none; color:var(--brown); font-weight:300; transition:color 0.2s; }
+    .mobile-menu a:hover { color:var(--gold); }
+
+    /* HERO */
+    .hero { min-height:100vh; background:var(--cream); display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative; overflow:hidden; padding-top:90px; }
+    .botanical { position:absolute; opacity:0.32; pointer-events:none; z-index:2; }
+    .botanical-left  { left:32px; top:110px; width:170px; }
+    .botanical-right { right:32px; top:110px; width:170px; transform:scaleX(-1); }
+    .hero-content { text-align:center; z-index:4; padding:0 20px; animation:fadeUp 1s ease both; position:relative; }
+    .photo-strip-outer { position:relative; z-index:2; }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);} }
+
+    /* IVY canvas — absolute inside .hero, behind all content */
+    #ivyCanvas { position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:1; }
+    .hero-title-wrap { position:relative; display:inline-block; margin-bottom:24px; }
+    .hero-title { font-family:'Cormorant Garamond',serif; font-size:clamp(2.8rem,8vw,6.2rem); font-weight:300; letter-spacing:0.12em; color:var(--brown); line-height:1; position:relative; z-index:1; }
+
+
+    .hero-logo-img { width: clamp(260px, 38vw, 480px); height: auto; display:block; margin:0 auto; position:relative; z-index:1; }
+    .hero-sub { font-size:clamp(0.8rem,2vw,0.92rem); font-weight:300; letter-spacing:0.08em; color:var(--mid-brown); margin-bottom:40px; }
+    .hero-btn { display:inline-block; padding:13px 36px; border:1.5px solid var(--gold); background:var(--light-gold); color:var(--brown); text-decoration:none; font-size:0.78rem; letter-spacing:0.18em; text-transform:uppercase; font-weight:400; border-radius:40px; transition:background 0.3s,color 0.3s,transform 0.2s; }
+    .hero-btn:hover { background:var(--gold); color:#fff; transform:translateY(-2px); }
+
+    /* PHOTO STRIP — centered with gaps and rounded corners */
+    .photo-strip-outer { width:100%; padding:48px 56px 0; animation:fadeUp 1.2s ease 0.3s both; }
+    .photo-strip { display:grid; grid-template-columns:2fr 1fr 1fr 2fr; gap:10px; height:350px; }
+    .photo-strip-item { overflow:hidden; border-radius:16px; position:relative; }
+    .photo-strip-item img { width:100%; height:100%; object-fit:cover; transition:transform 0.6s ease; display:block; }
+    .photo-strip-item:hover img { transform:scale(1.05); }
+
+    /* SECTIONS */
+    .section-header { text-align:center; margin-bottom:72px; }
+    .section-tag { font-size:0.68rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--gold); font-weight:500; margin-bottom:12px; display:flex; align-items:center; justify-content:center; gap:12px; }
+    .section-tag::before,.section-tag::after { content:''; width:40px; height:1px; background:var(--light-gold); }
+    .section-header h2 { font-family:'Cormorant Garamond',serif; font-size:clamp(2rem,4vw,3rem); font-weight:300; color:var(--brown); margin-bottom:12px; }
+    .section-header p { color:var(--mid-brown); font-weight:300; font-size:0.9rem; }
+
+    /* PAST EVENTS */
+    .events-section { padding:100px 40px; max-width:1400px; margin:0 auto; }
+    .event-row { display:flex; align-items:center; gap:72px; margin-bottom:80px; transition:opacity 0.7s ease,transform 0.7s ease; }
+    .event-row.will-animate { opacity:0; transform:translateY(30px); }
+    .event-row.will-animate.visible { opacity:1; transform:translateY(0); }
+    .event-row.reverse { flex-direction:row-reverse; }
+    .event-img-wrap { flex:0 0 520px; height:340px; border-radius:14px; overflow:hidden; cursor:pointer; position:relative; box-shadow:0 8px 36px rgba(90,60,30,0.14); }
+    .event-img-wrap img,.event-img-wrap video,.event-img-wrap .placeholder-bg { width:100%; height:100%; object-fit:cover; display:block; transition:transform 0.45s; }
+    .placeholder-bg { display:flex; align-items:center; justify-content:center; font-size:4rem; }
+    .event-img-wrap::after { content:''; position:absolute; inset:0; background:rgba(58,46,38,0); transition:background 0.35s; pointer-events:none; }
+    .event-img-wrap:hover::after { background:rgba(58,46,38,0.48); }
+    .event-img-wrap:hover img,.event-img-wrap:hover video,.event-img-wrap:hover .placeholder-bg { transform:scale(1.06); }
+    .click-hint { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; color:#fff; opacity:0; transition:opacity 0.3s; z-index:2; pointer-events:none; }
+    .event-img-wrap:hover .click-hint { opacity:1; }
+    .click-hint span { font-family:'Cormorant Garamond',serif; font-size:1.1rem; letter-spacing:0.1em; font-style:italic; }
+    .click-hint svg { width:28px; height:28px; stroke:#fff; fill:none; stroke-width:1.5; }
+    .event-row { gap:100px; }
+    .event-text { flex:1; padding:0; }
+    .event-text .etag { font-size:0.68rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--gold); font-weight:500; margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+    .event-text .etag::before { content:'✦'; font-size:0.7rem; }
+    .event-text h3 { font-family:'Cormorant Garamond',serif; font-size:clamp(1.6rem,3vw,2.2rem); font-weight:400; margin-bottom:20px; line-height:1.2; }
+    .event-text ul { list-style:none; display:flex; flex-direction:column; gap:10px; }
+    .event-text ul li { font-size:0.87rem; font-weight:300; color:var(--mid-brown); display:flex; align-items:flex-start; gap:12px; line-height:1.6; }
+    .event-text ul li::before { content:'✓'; color:var(--gold); font-size:0.75rem; margin-top:3px; flex-shrink:0; }
+    .divider-ornament { text-align:center; margin:0 0 72px; color:var(--light-gold); font-size:1.1rem; letter-spacing:0.5em; }
+
+    /* OVERLAY */
+    .overlay { position:fixed; inset:0; background:rgba(20,12,6,0.72); z-index:200; display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity 0.4s; backdrop-filter:blur(6px); padding:24px; }
+    .overlay.active { opacity:1; pointer-events:all; }
+    .overlay-inner { position:relative; }
+    .expanded-card {
+      width: min(960px, 95vw);
+      height: min(560px, 88vh);
+      border-radius: 22px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: row;
+      background: var(--brown);
+      color: var(--warm-white);
+      box-shadow: 0 32px 100px rgba(0,0,0,0.5);
+      transform: perspective(1000px) rotateY(90deg) scale(0.85);
+      transition: transform 0.55s cubic-bezier(0.4,0.2,0.2,1);
+    }
+    .overlay.active .expanded-card { transform: perspective(1000px) rotateY(0deg) scale(1); }
+
+    /* SLIDESHOW — left column, fixed width, full height */
+    .slideshow { position:relative; flex:0 0 52%; height:100%; background:#1a1008; overflow:hidden; }
+    .slide { position:absolute; inset:0; opacity:0; transition:opacity 0.55s ease; }
+    .slide.active { opacity:1; }
+    .slide img { width:100%; height:100%; object-fit:cover; display:block; }
+    .slide-placeholder { width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-size:5rem; }
+    .slide-prev,.slide-next { position:absolute; top:50%; transform:translateY(-50%); background:rgba(255,255,255,0.18); border:none; color:#fff; width:38px; height:38px; border-radius:50%; cursor:pointer; font-size:1.2rem; display:flex; align-items:center; justify-content:center; z-index:5; transition:background 0.2s; }
+    .slide-prev:hover,.slide-next:hover { background:rgba(255,255,255,0.38); }
+    .slide-prev { left:14px; }
+    .slide-next { right:14px; }
+    .slide-dots { position:absolute; bottom:14px; left:0; right:0; display:flex; justify-content:center; gap:7px; z-index:5; }
+    .slide-dot { width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,0.38); cursor:pointer; transition:background 0.2s; border:none; padding:0; }
+    .slide-dot.active { background:#fff; }
+
+    /* TEXT — right column, scrollable */
+    .expanded-body {
+      flex: 1;
+      padding: 40px 38px 40px 42px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+    .expanded-body::-webkit-scrollbar { width:3px; }
+    .expanded-body::-webkit-scrollbar-track { background:transparent; }
+    .expanded-body::-webkit-scrollbar-thumb { background:var(--gold); border-radius:4px; }
+    .expanded-body .ex-tag { font-size:0.65rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--gold); margin-bottom:12px; }
+    .expanded-body h3 { font-family:'Cormorant Garamond',serif; font-size:2rem; font-weight:400; margin-bottom:16px; line-height:1.2; }
+    .ex-divider { width:48px; height:1px; background:var(--gold); margin-bottom:20px; }
+    .expanded-body p { font-size:0.9rem; font-weight:300; line-height:1.9; color:#d9cfc4; margin-bottom:24px; }
+    .ex-meta { display:flex; flex-wrap:wrap; gap:14px; margin-top:auto; padding-top:20px; border-top:1px solid rgba(201,169,122,0.2); }
+    .ex-meta span { font-size:0.78rem; color:var(--gold); letter-spacing:0.05em; }
+    .close-btn { position:absolute; top:-14px; right:-14px; background:var(--gold); border:none; color:#fff; font-size:1rem; width:34px; height:34px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background 0.2s,transform 0.2s; z-index:10; box-shadow:0 4px 16px rgba(0,0,0,0.3); }
+    .close-btn:hover { background:var(--brown); transform:rotate(90deg); }
+
+    /* CALENDAR */
+    .calendar-section { background:var(--cream); padding:100px 60px; }
+    .calendar-inner { max-width:900px; margin:0 auto; }
+    .cal-nav { display:flex; align-items:center; justify-content:space-between; margin-bottom:32px; }
+    .cal-nav button { background:none; border:1.5px solid var(--light-gold); color:var(--brown); width:38px; height:38px; border-radius:50%; cursor:pointer; font-size:1.1rem; display:flex; align-items:center; justify-content:center; transition:all 0.2s; }
+    .cal-nav button:hover { background:var(--gold); border-color:var(--gold); color:#fff; }
+    .cal-month-label { font-family:'Cormorant Garamond',serif; font-size:1.8rem; font-weight:300; letter-spacing:0.08em; }
+    .cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:5px; }
+    .cal-dow { text-align:center; font-size:0.68rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--mid-brown); padding:8px 0 14px; font-weight:400; }
+    .cal-day { min-height:82px; border-radius:10px; padding:8px; background:var(--warm-white); transition:background 0.2s; }
+    .cal-day.other-month { background:transparent; opacity:0.3; }
+    .cal-day.today { background:#fff; box-shadow:0 0 0 1.5px var(--gold); }
+    .cal-day-num { font-size:0.78rem; font-weight:400; color:var(--mid-brown); margin-bottom:5px; }
+    .cal-day.today .cal-day-num { color:var(--gold); font-weight:600; }
+    .cal-event-pill { font-size:0.63rem; background:var(--light-gold); color:var(--brown); border-radius:4px; padding:2px 6px; margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer; transition:background 0.2s; display:block; }
+    .cal-event-pill:hover { background:var(--gold); color:#fff; }
+    .cal-legend { margin-top:24px; display:flex; gap:20px; justify-content:center; }
+    .cal-legend-item { display:flex; align-items:center; gap:8px; font-size:0.78rem; color:var(--mid-brown); font-weight:300; }
+    .cal-legend-dot { width:10px; height:10px; border-radius:50%; background:var(--light-gold); }
+
+    /* FOOTER */
+    footer { background:var(--brown); color:var(--cream); text-align:center; padding:56px 40px; }
+    footer .f-logo { font-family:'Cormorant Garamond',serif; font-size:1.8rem; font-weight:300; letter-spacing:0.15em; margin-bottom:8px; }
+    footer .f-sub { font-size:0.78rem; font-weight:300; letter-spacing:0.1em; color:var(--gold); margin-bottom:32px; }
+    footer .f-links { display:flex; gap:32px; justify-content:center; list-style:none; margin-bottom:36px; flex-wrap:wrap; }
+    footer .f-links a { text-decoration:none; color:#d9cfc4; font-size:0.78rem; letter-spacing:0.1em; text-transform:uppercase; font-weight:300; transition:color 0.2s; }
+    footer .f-links a:hover { color:var(--gold); }
+    footer .f-copy { font-size:0.72rem; color:#7a6a5a; }
+
+    /* RESPONSIVE */
+    @media (max-width:900px) {
+      nav { padding:14px 24px; }
+      .nav-links { display:none; }
+      .hamburger { display:flex; }
+      .photo-strip-outer { padding:28px 20px 0; }
+      .photo-strip { grid-template-columns:1fr 1fr; height:220px; gap:7px; }
+      .events-section { padding:64px 20px; }
+      .event-row,.event-row.reverse { flex-direction:column; gap:28px; }
+      .event-img-wrap { flex:none; width:100%; height:260px; }
+      .expanded-card { flex-direction:column; height:auto; max-height:90vh; }
+      .slideshow { flex:none; width:100%; height:260px; }
+      .expanded-body { padding:28px 24px; }
+      .calendar-section { padding:72px 20px; }
+      .cal-day { min-height:60px; padding:5px; }
+    }
+    @media (max-width:520px) {
+      .botanical-left,.botanical-right { display:none; }
+      .photo-strip { grid-template-columns:1fr 1fr; height:170px; gap:5px; }
+      .photo-strip-outer { padding:20px 12px 0; }
+      .cal-day { min-height:42px; }
+      .cal-event-pill { display:none; }
+      .cal-day.has-event .cal-day-num::after { content:' •'; color:var(--gold); }
+    }
+
+    /* CONTACT MODAL */
+    .contact-modal-overlay { position:fixed; inset:0; background:rgba(20,12,6,0.65); z-index:300; display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity 0.3s; backdrop-filter:blur(6px); padding:24px; }
+    .contact-modal-overlay.active { opacity:1; pointer-events:all; }
+    .contact-modal { background:var(--warm-white); border-radius:20px; padding:48px 44px; max-width:400px; width:100%; text-align:center; box-shadow:0 24px 80px rgba(0,0,0,0.3); transform:translateY(20px) scale(0.97); transition:transform 0.35s cubic-bezier(0.4,0.2,0.2,1); position:relative; }
+    .contact-modal-overlay.active .contact-modal { transform:translateY(0) scale(1); }
+    .contact-modal h3 { font-family:'Cormorant Garamond',serif; font-size:1.9rem; font-weight:300; color:var(--brown); margin-bottom:10px; }
+    .contact-modal p { font-size:0.85rem; font-weight:300; color:var(--mid-brown); margin-bottom:32px; line-height:1.7; }
+    .contact-options { display:flex; flex-direction:column; gap:14px; }
+    .contact-opt { display:flex; align-items:center; gap:14px; padding:16px 22px; border-radius:12px; text-decoration:none; font-size:0.85rem; font-weight:400; letter-spacing:0.05em; transition:transform 0.2s, box-shadow 0.2s; }
+    .contact-opt:hover { transform:translateY(-2px); box-shadow:0 6px 24px rgba(58,46,38,0.13); }
+    .contact-opt-email { background:var(--light-gold); color:var(--brown); border:1.5px solid var(--gold); }
+    .contact-opt-call { background:var(--brown); color:var(--warm-white); border:1.5px solid var(--brown); }
+    .contact-opt svg { flex-shrink:0; }
+    .contact-opt span { text-align:left; line-height:1.4; }
+    .contact-opt .opt-label { display:block; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.15em; opacity:0.7; margin-bottom:1px; }
+    .contact-opt .opt-value { display:block; font-size:0.88rem; font-weight:500; }
+    .contact-close { position:absolute; top:14px; right:16px; background:none; border:none; font-size:1.2rem; color:var(--mid-brown); cursor:pointer; line-height:1; padding:4px 8px; border-radius:50%; transition:background 0.2s; }
+    .contact-close:hover { background:var(--cream); }
+
+    /* SOCIAL LINKS */
+    .hero-social { display:flex; align-items:center; justify-content:center; gap:8px; margin-top:20px; text-decoration:none; color:var(--mid-brown); font-size:0.75rem; letter-spacing:0.12em; text-transform:uppercase; font-weight:300; transition:color 0.2s; }
+    .hero-social:hover { color:var(--gold); }
+    .hero-social svg { transition:transform 0.2s; }
+    .hero-social:hover svg { transform:scale(1.15); }
+    .f-socials { display:flex; justify-content:center; gap:18px; margin-bottom:28px; }
+    .f-social-link { color:#d9cfc4; text-decoration:none; display:flex; align-items:center; gap:7px; font-size:0.75rem; letter-spacing:0.1em; text-transform:uppercase; font-weight:300; transition:color 0.2s; }
+    .f-social-link:hover { color:var(--gold); }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">
+    <img src="images/img_5dea61d2.png" alt="Mud &amp; Meadows" class="nav-logo-img"/>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#">About Us</a></li>
+    <li><a href="events.html">Gallery</a></li>
+    <li><a href="calendar.html">Calendar</a></li>
+  </ul>
+  <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="about.html" onclick="toggleMenu()">About Us</a>
+  <a href="events.html" onclick="toggleMenu()">Gallery</a>
+  <a href="calendar.html" onclick="toggleMenu()">Calendar</a>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <canvas id="ivyCanvas"></canvas>
+
+  <div class="hero-content">
+    <div class="hero-title-wrap">
+      <h1 class="hero-title">MUD &amp; MEADOWS</h1>
+    </div>
+    <p class="hero-sub">Pop-up pottery, crafts and florals based in the DMV</p>
+    <a href="calendar.html" class="hero-btn">Upcoming Events</a>
+    <a href="https://www.instagram.com/mud_and_meadows/" target="_blank" rel="noopener" class="hero-social"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg> @mud_and_meadows</a>
+  </div>
+
+  <div class="photo-strip-outer">
+    <div class="photo-strip">
+      <div class="photo-strip-item"><img src="https://quinnboyle237-azpfb.wpcomstaging.com/wp-content/uploads/2025/11/img_3882.jpeg?w=800" alt=""/></div>
+      <div class="photo-strip-item"><img src="https://quinnboyle237-azpfb.wpcomstaging.com/wp-content/uploads/2025/11/img_3807.jpeg?w=400" alt=""/></div>
+      <div class="photo-strip-item"><img src="https://quinnboyle237-azpfb.wpcomstaging.com/wp-content/uploads/2025/11/img_3836.jpeg?w=400" alt=""/></div>
+      <div class="photo-strip-item"><img src="https://quinnboyle237-azpfb.wpcomstaging.com/wp-content/uploads/2025/11/img_3817.jpeg?w=800" alt=""/></div>
+    </div>
+  </div>
+</section>
+
+<!-- PAST EVENTS -->
+<section class="events-section" id="events">
+  <div class="section-header">
+    <div class="section-tag">Our Story So Far</div>
+    <h2>Past Events</h2>
+    <p>A look back at the moments we've shared together</p>
+  </div>
+
+  <div class="event-row" data-scroll>
+    <div class="event-img-wrap" onclick="openCard(0)">
+      <img src="images/flower_farm_plates.png" alt="Flower Farm Winery & Pottery Painting"/>
+      <div class="click-hint"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg><span>View details</span></div>
+    </div>
+    <div class="event-text">
+      <div class="etag">Past Event · October 2025</div>
+      <h3>Flower Farm Winery<br>&amp; Pottery Painting</h3>
+      <ul>
+        <li>Paint your own ceramic house-shaped vase at the beautiful Hope Flower Farm &amp; Winery.</li>
+        <li>Complimentary glass of wine included — sip, create, and soak in the farm views.</li>
+        <li>A cozy fall afternoon of creativity surrounded by flowers.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="divider-ornament">✦ &nbsp; ✦ &nbsp; ✦</div>
+
+  <div class="event-row reverse" data-scroll>
+    <div class="event-img-wrap" onclick="openCard(1)">
+      <video src="images/sweetlittleshop_cover.mp4" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block;"></video>
+      <div class="click-hint"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg><span>View details</span></div>
+    </div>
+    <div class="event-text">
+      <div class="etag">Past Event · 2026</div>
+      <h3>Tumbler Painting at<br>The Sweet Little Shop</h3>
+      <ul>
+        <li><span>Paint your own ceramic tumbler mug and take it home — guided from blank to finished piece.</span></li>
+        <li><span>Held inside the adorable <em>@the_sweetlittleshop</em> boutique — browse and shop all evening.</span></li>
+        <li><span>Cupcakes from <em>@sweetpoetrycakery</em> included for every guest.</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="divider-ornament">✦ &nbsp; ✦ &nbsp; ✦</div>
+
+  <div class="event-row" data-scroll>
+    <div class="event-img-wrap" onclick="openCard(2)">
+      <img src="images/galentines_firstPhoto.png" alt="Galentine's Pottery Party"/>
+      <div class="click-hint"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg><span>View details</span></div>
+    </div>
+    <div class="event-text">
+      <div class="etag">Past Event · February 2026</div>
+      <h3>Galentine's<br>Pottery Party</h3>
+      <ul>
+        <li><span>Paint your own ceramic martini glass with <em>@mud_and_meadows</em>.</span></li>
+        <li><span>Delicious drinks from <em>@tipsy.spirits_</em> all night long.</span></li>
+        <li><span>Held at <em>@southernwindsomd</em> — grab your girlfriends &amp; make it a night.</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="divider-ornament">✦ &nbsp; ✦ &nbsp; ✦</div>
+
+  <div class="event-row reverse" data-scroll>
+    <div class="event-img-wrap" onclick="openCard(3)">
+      <img src="images/hats_indexPhoto.png" alt="Shamrock & Smoke Hat Burning"/>
+      <div class="click-hint"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg><span>View details</span></div>
+    </div>
+    <div class="event-text">
+      <div class="etag">Upcoming Event · March 13, 2026</div>
+      <h3>Shamrock &amp; Smoke<br>Hat Burning Event</h3>
+      <ul>
+        <li><span>Design your own flat brim hat — templates, ribbons &amp; charms all included.</span></li>
+        <li><span>One Mullys drink on us with your ticket. Must be 21+.</span></li>
+        <li><span>Sip, create, and spend the night laughing with your favorite people.</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- OVERLAY + SLIDESHOW -->
+<div class="overlay" id="overlay" onclick="handleOverlayClick(event)">
+  <div class="overlay-inner">
+    <button class="close-btn" onclick="closeCard()">✕</button>
+    <div class="expanded-card">
+      <div class="slideshow" id="slideshow">
+        <button class="slide-prev" onclick="event.stopPropagation();slideMove(-1)">&#8249;</button>
+        <button class="slide-next" onclick="event.stopPropagation();slideMove(1)">&#8250;</button>
+        <div class="slide-dots" id="slideDots"></div>
+      </div>
+      <div class="expanded-body">
+        <div class="ex-tag">Past Event</div>
+        <h3 id="exTitle"></h3>
+        <div class="ex-divider"></div>
+        <p id="exDesc"></p>
+        <div class="ex-meta"><span id="exDate"></span><span id="exLocation"></span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CONTACT MODAL -->
+<div class="contact-modal-overlay" id="contactModal" onclick="handleContactOverlay(event)">
+  <div class="contact-modal">
+    <button class="contact-close" onclick="closeContact()">✕</button>
+    <h3>Get in Touch</h3>
+    <p>We'd love to hear from you — reach out however works best.</p>
+    <div class="contact-options">
+      <a href="mailto:shannonboyle205@gmail.com" class="contact-opt contact-opt-email">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,4 12,13 22,4"/></svg>
+        <span><span class="opt-label">Email us</span><span class="opt-value">shannonboyle205@gmail.com</span></span>
+      </a>
+      <a href="tel:+12674381100" class="contact-opt contact-opt-call">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.58 3.5 2 2 0 0 1 3.55 1.36h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9a16 16 0 0 0 6 6l1.27-.88a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7a2 2 0 0 1 1.72 2.03z"/></svg>
+        <span><span class="opt-label">Call us</span><span class="opt-value">(267) 438-1100</span></span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="f-logo">Mud & Meadows</div>
+  <div class="f-sub">Pop-up pottery, crafts & florals · DMV</div>
+  <ul class="f-links">
+    <li><a href="#">About Us</a></li><li><a href="events.html">Gallery</a></li>
+    <li><a href="calendar.html">Calendar</a></li><li><a href="#" onclick="openContact(event)">Contact</a></li>
+  </ul>
+  <div class="f-socials"><a href="https://www.instagram.com/mud_and_meadows/" target="_blank" rel="noopener" class="f-social-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg> @mud_and_meadows</a></div>
+  <div class="f-copy">© 2025 Mud & Meadows · All rights reserved</div>
+</footer>
+
+<script>
+// ══════════════════════════════════════
+// IVY ANIMATION — full-screen overlay
+// ══════════════════════════════════════
+(function() {
+  const canvas = document.getElementById('ivyCanvas');
+  const ctx    = canvas.getContext('2d');
+
+  // Muted earthy greens to match page palette
+  const STEM_COL  = 'rgba(90, 110, 72, 0.72)';
+  const LEAF_FILL = 'rgba(100, 118, 78, 0.68)';
+  const LEAF_STR  = 'rgba(68, 88, 52, 0.55)';
+  const VEIN_COL  = 'rgba(55, 75, 42, 0.35)';
+
+  const SEG_LEN  = 42;
+  const NUM_SEGS = 16;
+  const CURL_TURNS = 1.35;
+
+  function rnd(a, b) { return a + Math.random() * (b - a); }
+
+  // Build smooth vine: gentle wander, then spiral curl
+  // dir: 1 = growing right, -1 = growing left
+  function buildVine(sx, sy, initAngle, dir) {
+    dir = dir || 1;
+    const pts = [[sx, sy]];
+    let angle = initAngle;
+    for (let i = 0; i < NUM_SEGS; i++) {
+      const bias = -0.07; // slight upward tendency
+      angle += rnd(-0.40, 0.40) + bias;
+      // Clamp to keep vine moving in the right direction and not too steep
+      const maxAng = dir > 0 ? Math.PI * 0.5 : Math.PI * 1.5;
+      const minAng = dir > 0 ? -Math.PI * 0.5 : Math.PI * 0.5;
+      angle = Math.max(minAng, Math.min(maxAng, angle));
+      const prev = pts[pts.length - 1];
+      pts.push([prev[0] + Math.cos(angle) * SEG_LEN, prev[1] + Math.sin(angle) * SEG_LEN]);
+    }
+    // Smooth 5 passes
+    for (let pass = 0; pass < 5; pass++) {
+      for (let i = 1; i < pts.length - 1; i++) {
+        pts[i][0] = (pts[i-1][0] + pts[i][0] * 2 + pts[i+1][0]) / 4;
+        pts[i][1] = (pts[i-1][1] + pts[i][1] * 2 + pts[i+1][1]) / 4;
+      }
+    }
+    // Spiral curl tip
+    const tip  = pts[pts.length - 1];
+    const prev = pts[pts.length - 2];
+    const tang = Math.atan2(tip[1] - prev[1], tip[0] - prev[0]);
+    const curlR = 16;
+    const pivX  = tip[0] + Math.cos(tang + Math.PI / 2) * curlR;
+    const pivY  = tip[1] + Math.sin(tang + Math.PI / 2) * curlR;
+    const CSTEPS = 52;
+    // Record how many stem points exist BEFORE curl is added
+    const stemPointCount = pts.length;
+    for (let i = 1; i <= CSTEPS; i++) {
+      const t = i / CSTEPS;
+      const a = tang - Math.PI / 2 + t * CURL_TURNS * Math.PI * 2;
+      const r = curlR * (1 - t * 0.75);
+      pts.push([pivX + Math.cos(a) * r, pivY + Math.sin(a) * r]);
+    }
+    // stemT: the t value (0–1) where the curl begins in the full pts array
+    // Leaves must only appear at t < stemT * 0.88 (leave a small gap before curl)
+    pts._stemT = (stemPointCount - 1) / (pts.length - 1) * 0.88;
+    return pts;
+  }
+
+  // Catmull-Rom interpolation
+  function cr(pts, t) {
+    const n   = pts.length - 1;
+    const seg = Math.min(Math.floor(t * n), n - 1);
+    const u   = t * n - seg;
+    const p0  = pts[Math.max(seg - 1, 0)];
+    const p1  = pts[seg];
+    const p2  = pts[Math.min(seg + 1, n)];
+    const p3  = pts[Math.min(seg + 2, n)];
+    const f   = (a,b,c,d) => 0.5*((2*b)+(-a+c)*u+(2*a-5*b+4*c-d)*u*u+(-a+3*b-3*c+d)*u*u*u);
+    return [f(p0[0],p1[0],p2[0],p3[0]), f(p0[1],p1[1],p2[1],p3[1])];
+  }
+
+  // Draw 3-lobed ivy leaf with gentle sway animation
+  function drawLeaf(x, y, baseAngle, alpha, swayPhase, swayTime) {
+    if (alpha <= 0.02) return;
+    const sway  = Math.sin(swayTime * 0.7 + swayPhase) * 0.05;
+    const angle = baseAngle + sway;
+    const s     = 13;
+
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(angle);
+
+    // Centre lobe
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.bezierCurveTo( s*0.3, -s*0.75,  s*1.05, -s*0.85,  s*1.15, 0);
+    ctx.bezierCurveTo( s*1.05, s*0.55,  s*0.3,   s*0.38,  0, 0);
+    ctx.fillStyle   = LEAF_FILL;
+    ctx.strokeStyle = LEAF_STR;
+    ctx.lineWidth   = 0.55;
+    ctx.globalAlpha = alpha;
+    ctx.fill(); ctx.stroke();
+
+    // Left lobe
+    ctx.beginPath();
+    ctx.moveTo(s*0.28, -s*0.18);
+    ctx.bezierCurveTo(-s*0.18, -s*0.85, s*0.38, -s*1.35, s*0.75, -s*0.85);
+    ctx.bezierCurveTo( s*0.88, -s*0.55, s*0.58, -s*0.28, s*0.28, -s*0.18);
+    ctx.fill(); ctx.stroke();
+
+    // Right lobe
+    ctx.beginPath();
+    ctx.moveTo(s*0.28,  s*0.18);
+    ctx.bezierCurveTo(-s*0.18, s*0.85,  s*0.38, s*1.35,  s*0.75,  s*0.85);
+    ctx.bezierCurveTo( s*0.88, s*0.55,  s*0.58, s*0.28,  s*0.28,  s*0.18);
+    ctx.fill(); ctx.stroke();
+
+    // Veins
+    ctx.globalAlpha = alpha * 0.45;
+    ctx.strokeStyle = VEIN_COL;
+    ctx.lineWidth   = 0.55;
+    ctx.beginPath();
+    ctx.moveTo(0,0); ctx.lineTo(s*1.0, 0);
+    ctx.moveTo(s*0.28,-s*0.18); ctx.lineTo(s*0.65,-s*0.8);
+    ctx.moveTo(s*0.28, s*0.18); ctx.lineTo(s*0.65, s*0.8);
+    ctx.stroke();
+
+    ctx.restore();
+  }
+
+  let vines = [];
+
+  function buildVines() {
+    const W = canvas.width, H = canvas.height;
+    vines = [
+      // Left side — 3 vines at different heights
+      { pts: buildVine(0, H * rnd(0.18, 0.30), rnd(-0.15, 0.18),           1),  progress:0, delay:0,     grownLeaves:[] },
+      { pts: buildVine(0, H * rnd(0.38, 0.50), rnd(-0.08, 0.22),           1),  progress:0, delay:5500,  grownLeaves:[] },
+      { pts: buildVine(0, H * rnd(0.55, 0.68), rnd(-0.05, 0.20),           1),  progress:0, delay:10500, grownLeaves:[] },
+      // Right side — 3 vines at different heights
+      { pts: buildVine(W, H * rnd(0.15, 0.28), Math.PI + rnd(-0.15, 0.15), -1), progress:0, delay:2800,  grownLeaves:[] },
+      { pts: buildVine(W, H * rnd(0.38, 0.52), Math.PI + rnd(-0.10, 0.18), -1), progress:0, delay:8000,  grownLeaves:[] },
+      { pts: buildVine(W, H * rnd(0.58, 0.70), Math.PI + rnd(-0.08, 0.15), -1), progress:0, delay:13000, grownLeaves:[] },
+    ];
+  }
+
+  function resize() {
+    const hero = canvas.parentElement;
+    canvas.width  = hero.offsetWidth  || window.innerWidth;
+    canvas.height = hero.offsetHeight || window.innerHeight;
+    buildVines();
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  const MAX_LEAVES = 11;
+
+  function drawVine(v, swayTime, dt) {
+    if (v.progress <= 0) return;
+    const pts      = v.pts;
+    const STEPS    = 280;
+    const end      = Math.floor(STEPS * v.progress);
+    // Use the baked stem-end t value — leaves NEVER go past this
+    const LEAF_MAX = pts._stemT;
+
+    // ── Stem ──
+    ctx.beginPath();
+    const p0 = cr(pts, 0);
+    ctx.moveTo(p0[0], p0[1]);
+    for (let i = 1; i <= end; i++) {
+      const p = cr(pts, i / STEPS);
+      ctx.lineTo(p[0], p[1]);
+    }
+    ctx.strokeStyle = STEM_COL;
+    ctx.lineWidth   = 1.6;
+    ctx.globalAlpha = 1;
+    ctx.lineCap     = 'round';
+    ctx.lineJoin    = 'round';
+    ctx.stroke();
+
+    // ── Leaves strictly on stem only, never on curl ──
+    for (let i = 0; i < MAX_LEAVES; i++) {
+      // Space leaves evenly across the stem portion only
+      const tBase = ((i + 1) / (MAX_LEAVES + 1)) * LEAF_MAX;
+
+      // Vine hasn't reached this leaf yet — stop checking further slots
+      if (tBase > v.progress) break;
+
+      // Bake leaf position/angle once when first reached
+      if (!v.grownLeaves[i]) {
+        const pt   = cr(pts, tBase);
+        const pt2  = cr(pts, Math.min(tBase + 0.008, LEAF_MAX));
+        const tang = Math.atan2(pt2[1] - pt[1], pt2[0] - pt[0]);
+        const side = i % 2 === 0 ? 1 : -1;
+        v.grownLeaves[i] = {
+          x:         pt[0],
+          y:         pt[1],
+          baseAngle: tang + side * Math.PI * 0.42,
+          swayPhase: rnd(0, Math.PI * 2),
+          swayAmp:   rnd(0.03, 0.06),
+          fadeIn:    0,
+        };
+      }
+
+      const lf = v.grownLeaves[i];
+      lf.fadeIn = Math.min(1, lf.fadeIn + dt * 0.0008);
+
+      const sway  = Math.sin(swayTime * 0.7 + lf.swayPhase) * lf.swayAmp;
+      const angle = lf.baseAngle + sway;
+      drawLeaf(lf.x, lf.y, angle, lf.fadeIn * 0.80, lf.swayPhase, swayTime);
+    }
+  }
+
+  const GROW_PER_MS = 1 / 24000;
+
+  let lastTs = null;
+  function animate(ts) {
+    if (lastTs === null) lastTs = ts;
+    const dt       = Math.min(ts - lastTs, 50);
+    lastTs         = ts;
+    const swayTime = ts * 0.001;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    vines.forEach(v => {
+      if (v.delay > 0) { v.delay -= dt; return; }
+      if (v.progress < 1) v.progress = Math.min(1, v.progress + GROW_PER_MS * dt);
+      drawVine(v, swayTime, dt);
+    });
+
+    requestAnimationFrame(animate);
+  }
+
+  requestAnimationFrame(animate);
+})();
+
+// ══════════════════════════════════════
+// EVENT DATA
+// ══════════════════════════════════════
+const eventsData = [
+  {
+    title:'Flower Farm Winery & Pottery Painting',
+    media:[
+      {type:'video', src:'images/flower_farm_winery.mp4'},
+      {type:'img',   src:'images/flower_farm_house.jpg'},
+      {type:'img',   src:'images/farmpolo.jpg'},
+    ],
+    desc:"Have you ever wanted to sip wine in a flower field while painting pottery? We made that happen at Hope Flower Farm & Winery — a cozy fall afternoon of creativity surrounded by blooms. Each guest painted their own ceramic house-shaped vase, enjoyed a complimentary glass of wine, and soaked in the beauty of the farm. Seats sold out — stay tuned for the next one!",
+    date:'📅 October 11, 2025 · 11:00 AM – 1:30 PM', location:'📍 Hope Flower Farm & Winery, DMV'
+  },
+  {
+    title:'Tumbler Painting at The Sweet Little Shop',
+    media:[
+      {type:'video', src:'images/sweetlittleshop_cover.mp4'},
+      {type:'img',   src:'images/tumblrPoster.jpg'},
+      {type:'img',   src:'images/tumblrCup.jpg'},
+      {type:'video', src:'images/sweetlittleshop_tumbler.mp4'},
+    ],
+    desc:"We had the most beautiful time painting at @the_sweetlittleshop — and if you haven't been, this shop is SO CUTE! Each guest painted their own ceramic tumbler mug to take home and enjoyed a cupcake from @sweetpoetrycakery, then shopped the rest of the night away. Stay tuned to see how they turn out — can't wait til next time!",
+    date:'📅 2026', location:'📍 The Sweet Little Shop, DMV'
+  },
+  {
+    title:"Galentine's Pottery Party",
+    media:[
+      {type:'video', src:'images/galentines_vid.mp4'},
+      {type:'img',   src:'images/galentines_PP1.jpg'},
+      {type:'img',   src:'images/galentines_PP2.jpg'},
+    ],
+    desc:"Come paint pottery with us and your Galentines! 🥰💕 Paint your own ceramic martini glass with @mud_and_meadows while you enjoy the most delicious drinks from @tipsy.spirits_ 🍸 Spots are limited — grab your girlfriends and make it a night. Held at Southern Wind Boutique on February 12.",
+    date:'📅 February 12, 2026 · 6:00 PM – 9:00 PM', location:'📍 Southern Wind Boutique, DMV'
+  },
+  {
+    title:'Shamrock & Smoke — Hat Burning Event',
+    media:[
+      {type:'video', src:'images/hatBurningVId.mp4'},
+      {type:'video', src:'images/hats_video2.mp4'},
+      {type:'img',   src:'images/hat_poster2.jpg'},
+    ],
+    desc:"Cowgirl vibes only 🤎✨ Create your own custom hat, sip a drink, and spend the day laughing with your favorite people. Each ticket includes your own flat brim hat, design templates, ribbons, and charms — plus one Mullys drink on us! Tickets are in the bio. Must be 21+.",
+    date:'Friday, March 13, 2026 · 6:00 PM – 9:00 PM', location:'Southern Wind Boutique, 9375 Chesapeake St. #125, La Plata, MD'
+  },
+];
+
+// ══════════════════════════════════════
+// SLIDESHOW
+// ══════════════════════════════════════
+let curSlide=0;
+
+function buildSlides(media) {
+  const ss=document.getElementById('slideshow');
+  const prev=ss.querySelector('.slide-prev'), next=ss.querySelector('.slide-next');
+  const dots=document.getElementById('slideDots');
+  ss.querySelectorAll('.slide').forEach(s=>s.remove());
+  dots.innerHTML=''; curSlide=0;
+  media.forEach((m,i)=>{
+    const d=document.createElement('div');
+    d.className='slide'+(i===0?' active':'');
+    d.innerHTML = m.type==='img'
+      ? `<img src="${m.src}" alt=""/>`
+      : m.type==='video'
+      ? `<video src="${m.src}" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block;"></video>`
+      : `<div class="slide-placeholder" style="background:${m.bg}">${m.emoji}</div>`;
+    ss.insertBefore(d,prev);
+    const dot=document.createElement('button');
+    dot.className='slide-dot'+(i===0?' active':'');
+    dot.onclick=e=>{e.stopPropagation();goSlide(i);};
+    dots.appendChild(dot);
+  });
+  prev.style.display=next.style.display=media.length>1?'':'none';
+}
+
+function goSlide(n) {
+  const slides=document.querySelectorAll('.slide'), dots=document.querySelectorAll('.slide-dot');
+  slides[curSlide].classList.remove('active'); dots[curSlide].classList.remove('active');
+  curSlide=(n+slides.length)%slides.length;
+  slides[curSlide].classList.add('active'); dots[curSlide].classList.add('active');
+}
+function slideMove(d){goSlide(curSlide+d);}
+
+function openCard(i) {
+  const e=eventsData[i];
+  buildSlides(e.media);
+  document.getElementById('exTitle').textContent=e.title;
+  document.getElementById('exDesc').textContent=e.desc;
+  document.getElementById('exDate').textContent=e.date;
+  document.getElementById('exLocation').textContent=e.location;
+  document.getElementById('overlay').classList.add('active');
+  document.body.style.overflow='hidden';
+}
+function closeCard(){document.getElementById('overlay').classList.remove('active');document.body.style.overflow='';}
+function handleOverlayClick(e){if(e.target===document.getElementById('overlay'))closeCard();}
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape')closeCard();
+  if(e.key==='ArrowLeft')slideMove(-1);
+  if(e.key==='ArrowRight')slideMove(1);
+});
+
+// ══════════════════════════════════════
+// CALENDAR
+// ══════════════════════════════════════
+// ← Add your future events here
+const calEventsData=[
+  {date:'2026-03-15',title:'Spring Workshop'},
+  {date:'2026-03-22',title:'Floral Pottery'},
+  {date:'2026-04-05',title:'Easter Mugs'},
+  {date:'2026-04-19',title:'Spring Pop-up'},
+  {date:'2026-05-10',title:"Mother's Day"},
+  {date:'2026-05-24',title:'Garden Party'},
+];
+
+const now=new Date(); let calY=now.getFullYear(), calM=now.getMonth();
+const MNAMES=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const DNAMES=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+function renderCal(){
+  document.getElementById('calLabel').textContent=MNAMES[calM]+' '+calY;
+  const grid=document.getElementById('calGrid'); grid.innerHTML='';
+  DNAMES.forEach(d=>{const el=document.createElement('div');el.className='cal-dow';el.textContent=d;grid.appendChild(el);});
+  const firstDay=new Date(calY,calM,1).getDay();
+  const dim=new Date(calY,calM+1,0).getDate();
+  const prevDim=new Date(calY,calM,0).getDate();
+  const eMap={};
+  calEventsData.forEach(ev=>{eMap[ev.date]=eMap[ev.date]||[];eMap[ev.date].push(ev.title);});
+  for(let i=0;i<firstDay;i++){const el=document.createElement('div');el.className='cal-day other-month';el.innerHTML=`<div class="cal-day-num">${prevDim-firstDay+1+i}</div>`;grid.appendChild(el);}
+  for(let d=1;d<=dim;d++){
+    const mm=String(calM+1).padStart(2,'0'), dd=String(d).padStart(2,'0'), key=`${calY}-${mm}-${dd}`;
+    const isToday=d===now.getDate()&&calM===now.getMonth()&&calY===now.getFullYear();
+    const evs=eMap[key]||[];
+    const el=document.createElement('div');
+    el.className='cal-day'+(isToday?' today':'')+(evs.length?' has-event':'');
+    let html=`<div class="cal-day-num">${d}</div>`;
+    evs.forEach(ev=>{html+=`<div class="cal-event-pill">${ev}</div>`;});
+    el.innerHTML=html; grid.appendChild(el);
+  }
+  const rem=(firstDay+dim)%7===0?0:7-(firstDay+dim)%7;
+  for(let i=1;i<=rem;i++){const el=document.createElement('div');el.className='cal-day other-month';el.innerHTML=`<div class="cal-day-num">${i}</div>`;grid.appendChild(el);}
+}
+function calMove(d){calM+=d;if(calM>11){calM=0;calY++;}if(calM<0){calM=11;calY--;}renderCal();}
+renderCal();
+
+// ══════════════════════════════════════
+// MOBILE MENU & SCROLL REVEAL
+// ══════════════════════════════════════
+function toggleMenu(){
+  document.getElementById('hamburger').classList.toggle('open');
+  document.getElementById('mobileMenu').classList.toggle('open');
+  document.body.style.overflow=document.getElementById('mobileMenu').classList.contains('open')?'hidden':'';
+}
+
+function openContact(e){e.preventDefault();document.getElementById('contactModal').classList.add('active');document.body.style.overflow='hidden';}
+function closeContact(){document.getElementById('contactModal').classList.remove('active');document.body.style.overflow='';}
+function handleContactOverlay(e){if(e.target===document.getElementById('contactModal'))closeContact();}
+
+// Scroll reveal — only hides/animates elements that are genuinely below the fold
+function initReveal() {
+  const els = document.querySelectorAll('[data-scroll]');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        obs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.08 });
+
+  els.forEach(el => {
+    const rect = el.getBoundingClientRect();
+    if (rect.top >= window.innerHeight) {
+      // Only below-fold elements get the hide+animate treatment
+      el.classList.add('will-animate');
+      obs.observe(el);
+    }
+    // Elements already in view are left alone — fully visible by default
+  });
+}
+
+window.addEventListener('load', initReveal);
+</script>
+</body>
+</html>

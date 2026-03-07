@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gallery · Mud & Meadows</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+    :root {
+      --cream:#f2ece2; --warm-white:#faf7f2; --brown:#3a2e26;
+      --mid-brown:#7a6a5a; --gold:#c9a97a; --light-gold:#e8d5b0;
+    }
+    html { scroll-behavior:smooth; }
+    body { font-family:'Jost',sans-serif; background:var(--warm-white); color:var(--brown); overflow-x:hidden; }
+
+    /* NAV */
+    nav { position:fixed; top:0; left:0; right:0; z-index:100; display:flex; align-items:center; justify-content:space-between; padding:16px 48px; background:rgba(242,236,226,0.94); backdrop-filter:blur(8px); border-bottom:1px solid rgba(201,169,122,0.2); }
+    .nav-logo { display:flex; align-items:center; text-decoration:none; }
+    .nav-logo-img { height:90px; width:90px; object-fit:contain; display:block; }
+    .nav-links { display:flex; gap:40px; list-style:none; }
+    .nav-links a { text-decoration:none; font-size:0.8rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--brown); font-weight:300; transition:color 0.2s; position:relative; }
+    .nav-links a::after { content:''; position:absolute; bottom:-3px; left:0; right:0; height:1px; background:var(--gold); transform:scaleX(0); transition:transform 0.3s; }
+    .nav-links a:hover, .nav-links a.active { color:var(--gold); }
+    .nav-links a:hover::after, .nav-links a.active::after { transform:scaleX(1); }
+    .hamburger { display:none; flex-direction:column; gap:5px; cursor:pointer; background:none; border:none; padding:4px; }
+    .hamburger span { width:24px; height:1.5px; background:var(--brown); transition:all 0.3s; display:block; }
+    .hamburger.open span:nth-child(1) { transform:rotate(45deg) translate(4px,4px); }
+    .hamburger.open span:nth-child(2) { opacity:0; }
+    .hamburger.open span:nth-child(3) { transform:rotate(-45deg) translate(4px,-4px); }
+    .mobile-menu { display:none; position:fixed; inset:0; background:var(--cream); z-index:99; flex-direction:column; align-items:center; justify-content:center; gap:40px; }
+    .mobile-menu.open { display:flex; }
+    .mobile-menu a { font-family:'Cormorant Garamond',serif; font-size:2.4rem; text-decoration:none; color:var(--brown); font-weight:300; transition:color 0.2s; }
+    .mobile-menu a:hover { color:var(--gold); }
+
+    /* PAGE HERO */
+    .page-hero { background:var(--cream); padding:130px 60px 64px; text-align:center; }
+    .page-tag { font-size:0.68rem; letter-spacing:0.22em; text-transform:uppercase; color:var(--gold); font-weight:500; margin-bottom:14px; display:flex; align-items:center; justify-content:center; gap:14px; }
+    .page-tag::before,.page-tag::after { content:''; width:40px; height:1px; background:var(--light-gold); }
+    .page-hero h1 { font-family:'Cormorant Garamond',serif; font-size:clamp(2.6rem,6vw,4.5rem); font-weight:300; letter-spacing:0.08em; color:var(--brown); margin-bottom:14px; }
+    .page-hero p { font-size:0.92rem; font-weight:300; color:var(--mid-brown); max-width:480px; margin:0 auto; line-height:1.8; }
+
+    /* FILTER TABS */
+    .filter-bar { display:flex; justify-content:center; gap:12px; flex-wrap:wrap; padding:40px 40px 0; }
+    .filter-btn { padding:8px 22px; border:1.5px solid var(--light-gold); background:transparent; color:var(--mid-brown); font-family:'Jost',sans-serif; font-size:0.75rem; letter-spacing:0.12em; text-transform:uppercase; border-radius:40px; cursor:pointer; transition:all 0.25s; }
+    .filter-btn:hover, .filter-btn.active { background:var(--gold); border-color:var(--gold); color:#fff; }
+
+    /* MASONRY GRID */
+    .masonry-wrap { padding:48px 48px 100px; max-width:1400px; margin:0 auto; }
+    .masonry { columns:3; column-gap:20px; }
+    .masonry-item {
+      break-inside:avoid;
+      margin-bottom:20px;
+      border-radius:16px;
+      overflow:hidden;
+      position:relative;
+      cursor:pointer;
+      background:var(--cream);
+    }
+    .masonry-item img, .masonry-item video { width:100%; display:block; transition:transform 0.5s ease; }
+    .masonry-item:hover img, .masonry-item:hover video { transform:scale(1.04); }
+
+    /* Hover overlay */
+    .masonry-overlay {
+      position:absolute; inset:0;
+      background:linear-gradient(to top, rgba(42,28,18,0.85) 0%, rgba(42,28,18,0) 55%);
+      opacity:0; transition:opacity 0.35s ease;
+      display:flex; flex-direction:column;
+      justify-content:flex-end; padding:24px;
+    }
+    .masonry-item:hover .masonry-overlay { opacity:1; }
+    .masonry-overlay-tag { font-size:0.6rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--gold); font-weight:500; margin-bottom:6px; }
+    .masonry-overlay-title { font-family:'Cormorant Garamond',serif; font-size:1.3rem; font-weight:400; color:#fff; line-height:1.2; }
+
+    /* Size classes */
+    .masonry-item.tall img, .masonry-item.tall video { min-height:420px; object-fit:cover; }
+    .masonry-item.medium img, .masonry-item.medium video { min-height:300px; object-fit:cover; }
+    .masonry-item.short img, .masonry-item.short video { min-height:200px; object-fit:cover; }
+
+    /* Play icon */
+    .play-icon {
+      position:absolute; top:50%; left:50%;
+      transform:translate(-50%,-50%);
+      width:52px; height:52px;
+      background:rgba(255,255,255,0.88); border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      pointer-events:none; z-index:2;
+      transition:opacity 0.3s, transform 0.3s; opacity:0.85;
+    }
+    .play-icon svg { margin-left:4px; }
+    .masonry-item:hover .play-icon { opacity:1; transform:translate(-50%,-50%) scale(1.1); }
+
+    /* Upcoming badge */
+    .upcoming-badge {
+      position:absolute; top:14px; left:14px;
+      background:var(--gold); color:#fff;
+      font-size:0.6rem; letter-spacing:0.14em; text-transform:uppercase;
+      padding:4px 10px; border-radius:20px; font-weight:500; z-index:2;
+    }
+
+    /* LIGHTBOX */
+    .lightbox { position:fixed; inset:0; background:rgba(20,12,6,0.88); z-index:300; display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity 0.3s; backdrop-filter:blur(8px); padding:20px; }
+    .lightbox.active { opacity:1; pointer-events:all; }
+    .lightbox-inner { position:relative; max-width:900px; width:100%; }
+    .lightbox-card { background:var(--brown); border-radius:20px; overflow:hidden; display:flex; max-height:88vh; }
+
+    /* Lightbox image / slideshow panel */
+    .lightbox-img { flex:0 0 48%; position:relative; overflow:hidden; background:#1a1008; min-height:320px; }
+    .lb-slide { position:absolute; inset:0; opacity:0; transition:opacity 0.45s ease; }
+    .lb-slide.active { opacity:1; }
+    .lb-slide img  { width:100%; height:100%; object-fit:cover; display:block; }
+    .lb-slide video { width:100%; height:100%; object-fit:cover; display:block; }
+
+    /* Slide nav */
+    .lb-prev, .lb-next {
+      position:absolute; top:50%; transform:translateY(-50%);
+      background:rgba(255,255,255,0.18); border:none; color:#fff;
+      width:34px; height:34px; border-radius:50%; cursor:pointer;
+      font-size:1.1rem; display:flex; align-items:center; justify-content:center;
+      z-index:5; transition:background 0.2s;
+    }
+    .lb-prev { left:10px; }
+    .lb-next { right:10px; }
+    .lb-prev:hover, .lb-next:hover { background:rgba(255,255,255,0.38); }
+    .lb-dots { position:absolute; bottom:12px; left:0; right:0; display:flex; justify-content:center; gap:6px; z-index:5; }
+    .lb-dot { width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,0.38); border:none; cursor:pointer; padding:0; transition:background 0.2s; }
+    .lb-dot.active { background:#fff; }
+
+    /* Media-only lightbox (no text panel) */
+    .lightbox-card.media-only .lightbox-img { flex:1 1 100%; border-radius:20px; }
+    .lightbox-card.media-only .lightbox-body { display:none; }
+
+    /* Lightbox body */
+    .lightbox-body { flex:1; padding:40px 36px; overflow-y:auto; display:flex; flex-direction:column; color:var(--warm-white); }
+    .lightbox-body::-webkit-scrollbar { width:3px; }
+    .lightbox-body::-webkit-scrollbar-thumb { background:var(--gold); border-radius:4px; }
+    .lb-tag { font-size:0.65rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--gold); margin-bottom:12px; }
+    .lb-title { font-family:'Cormorant Garamond',serif; font-size:1.9rem; font-weight:400; line-height:1.2; margin-bottom:16px; }
+    .lb-divider { width:44px; height:1px; background:var(--gold); margin-bottom:18px; }
+    .lb-desc { font-size:0.88rem; font-weight:300; line-height:1.9; color:#d9cfc4; flex:1; margin-bottom:20px; }
+    .lb-meta { padding-top:18px; border-top:1px solid rgba(201,169,122,0.2); display:flex; flex-direction:column; gap:8px; }
+    .lb-meta-row { display:flex; gap:10px; font-size:0.8rem; font-weight:300; color:#d9cfc4; }
+    .lb-meta-label { font-size:0.62rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--gold); min-width:56px; margin-top:1px; }
+    .lb-close { position:absolute; top:-14px; right:-14px; background:var(--gold); border:none; color:#fff; font-size:1rem; width:34px; height:34px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background 0.2s,transform 0.2s; z-index:10; box-shadow:0 4px 16px rgba(0,0,0,0.3); }
+    .lb-close:hover { background:var(--brown); transform:rotate(90deg); }
+
+    /* FOOTER */
+    footer { background:var(--brown); color:var(--cream); text-align:center; padding:56px 40px; }
+    footer .f-logo { font-family:'Cormorant Garamond',serif; font-size:1.8rem; font-weight:300; letter-spacing:0.15em; margin-bottom:8px; }
+    footer .f-sub { font-size:0.78rem; font-weight:300; letter-spacing:0.1em; color:var(--gold); margin-bottom:32px; }
+    footer .f-links { display:flex; gap:32px; justify-content:center; list-style:none; margin-bottom:36px; flex-wrap:wrap; }
+    footer .f-links a { text-decoration:none; color:#d9cfc4; font-size:0.78rem; letter-spacing:0.1em; text-transform:uppercase; font-weight:300; transition:color 0.2s; }
+    footer .f-links a:hover { color:var(--gold); }
+    footer .f-copy { font-size:0.72rem; color:#7a6a5a; }
+
+    /* RESPONSIVE */
+    @media (max-width:900px) {
+      nav { padding:14px 24px; }
+      .nav-links { display:none; }
+      .hamburger { display:flex; }
+      .masonry { columns:2; }
+      .masonry-wrap { padding:32px 20px 80px; }
+      .page-hero { padding:110px 28px 48px; }
+      .lightbox-card { flex-direction:column; }
+      .lightbox-img { flex:none; height:260px; min-height:unset; }
+    }
+    @media (max-width:520px) {
+      .masonry { columns:1; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="mud-and-meadows.html">
+    <img src="images/img_5dea61d2.png" alt="Mud &amp; Meadows" class="nav-logo-img"/>
+  </a>
+  <ul class="nav-links">
+    <li><a href="about.html">About Us</a></li>
+    <li><a href="events.html" class="active">Gallery</a></li>
+    <li><a href="calendar.html">Calendar</a></li>
+  </ul>
+  <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="about.html" onclick="toggleMenu()">About Us</a>
+  <a href="events.html" onclick="toggleMenu()">Gallery</a>
+  <a href="calendar.html" onclick="toggleMenu()">Calendar</a>
+</div>
+
+<!-- PAGE HERO -->
+<section class="page-hero">
+  <div class="page-tag">Mud &amp; Meadows</div>
+  <h1>Gallery</h1>
+  <p>A look back at the pop-ups, workshops, and gatherings we've shared together.</p>
+</section>
+
+<!-- FILTER TABS -->
+<div class="filter-bar">
+  <button class="filter-btn active" onclick="filterEvents('all', this)">All</button>
+  <button class="filter-btn" onclick="filterEvents('gallery', this)">Gallery</button>
+  <button class="filter-btn" onclick="filterEvents('events', this)">Events</button>
+</div>
+
+<!-- MASONRY GRID -->
+<div class="masonry-wrap">
+  <div class="masonry" id="masonryGrid"></div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="handleLbClick(event)">
+  <div class="lightbox-inner">
+    <button class="lb-close" onclick="closeLb()">&#10005;</button>
+    <div class="lightbox-card" id="lightboxCard">
+      <div class="lightbox-img" id="lbImg"></div>
+      <div class="lightbox-body">
+        <div class="lb-tag"  id="lbTag"></div>
+        <div class="lb-title" id="lbTitle"></div>
+        <div class="lb-divider" id="lbDivider"></div>
+        <div class="lb-desc" id="lbDesc"></div>
+        <div class="lb-meta" id="lbMeta"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="f-logo">Mud & Meadows</div>
+  <div class="f-sub">Pop-up pottery, crafts & florals · Maryland</div>
+  <ul class="f-links">
+    <li><a href="about.html">About Us</a></li>
+    <li><a href="events.html">Gallery</a></li>
+    <li><a href="calendar.html">Calendar</a></li>
+    <li><a href="#">Contact</a></li>
+  </ul>
+  <div class="f-socials"><a href="https://www.instagram.com/mud_and_meadows/" target="_blank" rel="noopener" class="f-social-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg> @mud_and_meadows</a></div>
+  <div class="f-copy">&#169; 2026 Mud & Meadows · All rights reserved</div>
+</footer>
+
+<script>
+// ══════════════════════════════════════
+// ALL EVENTS DATA
+// "gallery" category  → images/New folder/
+// "events" category   → images/events/ + past homepage events
+// ══════════════════════════════════════
+const allEvents = [
+
+  // ─── GALLERY (images/New folder/) ───────────────────────────────
+  {
+    id: 'g1',
+    title: '2025 Recap',
+    tag: '2025',
+    categories: ['gallery'],
+    size: 'tall',
+    cover: { type:'video', src:'images/New folder/2025Recap.mp4' },
+    media: [{ type:'video', src:'images/New folder/2025Recap.mp4' }],
+  },
+  {
+    id: 'g2',
+    title: 'Cheese Plates',
+    tag: '',
+    categories: ['gallery'],
+    size: 'medium',
+    cover: { type:'video', src:'images/New folder/cheese plates.mp4' },
+    media: [{ type:'video', src:'images/New folder/cheese plates.mp4' }],
+  },
+  {
+    id: 'g3',
+    title: '',
+    tag: '',
+    categories: ['gallery'],
+    size: 'short',
+    cover: { type:'video', src:'images/New folder/mud_and_meadows_1737636260_3551865382538657159_65621474870.mp4' },
+    media: [{ type:'video', src:'images/New folder/mud_and_meadows_1737636260_3551865382538657159_65621474870.mp4' }],
+  },
+  {
+    id: 'g4',
+    title: 'Pop-Up',
+    tag: '',
+    categories: ['gallery'],
+    size: 'medium',
+    cover: { type:'img', src:'images/New folder/popUp.jpg' },
+    media: [{ type:'img', src:'images/New folder/popUp.jpg' }],
+  },
+  {
+    id: 'g5',
+    title: 'Ring Holder',
+    tag: '',
+    categories: ['gallery'],
+    size: 'tall',
+    cover: { type:'video', src:'images/New folder/ringHolder.mp4' },
+    media: [{ type:'video', src:'images/New folder/ringHolder.mp4' }],
+  },
+  {
+    id: 'g6',
+    title: 'Stone Silo',
+    tag: '',
+    categories: ['gallery'],
+    size: 'medium',
+    cover: { type:'video', src:'images/New folder/siloBrew.mp4' },
+    media: [{ type:'video', src:'images/New folder/siloBrew.mp4' }],
+  },
+  {
+    id: 'g7',
+    title: '',
+    tag: '',
+    categories: ['gallery'],
+    size: 'short',
+    cover: { type:'video', src:'images/New folder/vine.mp4' },
+    media: [{ type:'video', src:'images/New folder/vine.mp4' }],
+  },
+  {
+    id: 'g8',
+    title: 'Wedding Plate',
+    tag: '',
+    categories: ['gallery'],
+    size: 'medium',
+    cover: { type:'video', src:'images/New folder/weddingPlate.mp4' },
+    media: [{ type:'video', src:'images/New folder/weddingPlate.mp4' }],
+  },
+
+  // ─── EVENTS (images/events/) ────────────────────────────────────
+  {
+    id: 'e1',
+    title: 'Berry Basket',
+    tag: '',
+    categories: ['events'],
+    size: 'tall',
+    cover: { type:'img', src:'images/events/BeryBasket.jpg' },
+    media: [{ type:'img', src:'images/events/BeryBasket.jpg' }],
+  },
+  {
+    id: 'e2',
+    title: 'Mini Muddies',
+    tag: '',
+    categories: ['events'],
+    size: 'medium',
+    cover: { type:'img', src:'images/events/miniMuddies.jpg' },
+    media: [{ type:'img', src:'images/events/miniMuddies.jpg' }],
+  },
+  {
+    id: 'e3',
+    title: '',
+    tag: '',
+    categories: ['events'],
+    size: 'short',
+    cover: { type:'img', src:'images/events/mud_and_meadows_1742209037_3590232081302269398_65621474870.jpg' },
+    media: [{ type:'img', src:'images/events/mud_and_meadows_1742209037_3590232081302269398_65621474870.jpg' }],
+  },
+
+  // ─── EVENTS (past events from homepage) ─────────────────────────
+  {
+    id: 'ev1',
+    title: 'Flower Farm Winery & Pottery Painting',
+    tag: 'October 2025',
+    categories: ['events'],
+    size: 'tall',
+    cover: { type:'img', src:'images/flower_farm_plates.png' },
+    media: [
+      { type:'video', src:'images/flower_farm_winery.mp4' },
+      { type:'img',   src:'images/flower_farm_house.jpg' },
+      { type:'img',   src:'images/farmpolo.jpg' },
+    ],
+    desc: "Have you ever wanted to sip wine in a flower field while painting pottery? We made that happen at Hope Flower Farm & Winery — a cozy fall afternoon of creativity surrounded by blooms. Each guest painted their own ceramic house-shaped vase, enjoyed a complimentary glass of wine, and soaked in the beauty of the farm.",
+    date: 'October 11, 2025 · 11:00 AM – 1:30 PM',
+    location: 'Hope Flower Farm & Winery, Maryland',
+  },
+  {
+    id: 'ev2',
+    title: 'Tumbler Painting at The Sweet Little Shop',
+    tag: '2026',
+    categories: ['events'],
+    size: 'medium',
+    cover: { type:'video', src:'images/sweetlittleshop_cover.mp4' },
+    media: [
+      { type:'video', src:'images/sweetlittleshop_cover.mp4' },
+      { type:'img',   src:'images/tumblrPoster.jpg' },
+      { type:'img',   src:'images/tumblrCup.jpg' },
+      { type:'video', src:'images/sweetlittleshop_tumbler.mp4' },
+    ],
+    desc: "We had the most beautiful time painting at @the_sweetlittleshop! Each guest painted their own ceramic tumbler mug to take home and enjoyed a cupcake from @sweetpoetrycakery, then shopped the rest of the night away.",
+    date: '2026',
+    location: 'The Sweet Little Shop, Maryland',
+  },
+  {
+    id: 'ev3',
+    title: "Galentine's Pottery Party",
+    tag: 'February 2026',
+    categories: ['events'],
+    size: 'tall',
+    cover: { type:'img', src:'images/galentines_firstPhoto.png' },
+    media: [
+      { type:'video', src:'images/galentines_vid.mp4' },
+      { type:'img',   src:'images/galentines_PP1.jpg' },
+      { type:'img',   src:'images/galentines_PP2.jpg' },
+    ],
+    desc: "Come paint pottery with us and your Galentines! 💕 Paint your own ceramic martini glass with @mud_and_meadows while you enjoy the most delicious drinks from @tipsy.spirits_ 🍸 Grab your girlfriends and make it a night. Held at Southern Wind Boutique.",
+    date: 'February 12, 2026 · 6:00 PM – 9:00 PM',
+    location: 'Southern Wind Boutique, Maryland',
+  },
+  {
+    id: 'ev4',
+    title: 'Shamrock & Smoke — Hat Burning Event',
+    tag: 'March 13, 2026',
+    upcoming: true,
+    categories: ['events'],
+    size: 'medium',
+    cover: { type:'img', src:'images/hats_indexPhoto.png' },
+    media: [
+      { type:'video', src:'images/hatBurningVId.mp4' },
+      { type:'video', src:'images/hats_video2.mp4' },
+      { type:'img',   src:'images/hat_poster2.jpg' },
+    ],
+    desc: "Cowgirl vibes only 🤎✨ Create your own custom hat, sip a drink, and spend the day laughing with your favorite people. Each ticket includes your own flat brim hat, design templates, ribbons, and charms — plus one drink on us! Must be 21+.",
+    date: 'Friday, March 13, 2026 · 6:00 PM – 9:00 PM',
+    location: 'Southern Wind Boutique, 9375 Chesapeake St. #125, La Plata, MD',
+  },
+];
+
+// ══════════════════════════════════════
+// RENDER MASONRY
+// ══════════════════════════════════════
+function renderGrid(filter) {
+  const grid = document.getElementById('masonryGrid');
+  grid.innerHTML = '';
+  const filtered = (filter === 'all')
+    ? allEvents
+    : allEvents.filter(e => e.categories.includes(filter));
+
+  filtered.forEach((ev, i) => {
+    const item = document.createElement('div');
+    item.className = `masonry-item ${ev.size || 'medium'}`;
+    item.style.animationDelay = (i * 0.06) + 's';
+
+    const coverHtml = ev.cover.type === 'video'
+      ? `<video src="${ev.cover.src}" autoplay muted loop playsinline style="width:100%;object-fit:cover;display:block;"></video>`
+      : `<img src="${ev.cover.src}" alt="${ev.title}"/>`;
+
+    const badgeHtml = ev.upcoming
+      ? `<div class="upcoming-badge">Upcoming</div>` : '';
+
+    const hasVideo = ev.media.some(m => m.type === 'video');
+    const playHtml = hasVideo
+      ? `<div class="play-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="var(--brown)"><polygon points="5,3 19,12 5,21"/></svg></div>`
+      : '';
+
+    item.innerHTML = `
+      ${badgeHtml}
+      ${coverHtml}
+      ${playHtml}
+      <div class="masonry-overlay">
+        ${ev.tag ? `<div class="masonry-overlay-tag">${ev.tag}</div>` : ''}
+        ${ev.title ? `<div class="masonry-overlay-title">${ev.title}</div>` : ''}
+      </div>
+    `;
+    item.addEventListener('click', () => openLb(ev));
+    grid.appendChild(item);
+  });
+}
+
+// ══════════════════════════════════════
+// FILTER
+// ══════════════════════════════════════
+function filterEvents(cat, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderGrid(cat);
+}
+
+// ══════════════════════════════════════
+// LIGHTBOX SLIDESHOW
+// ══════════════════════════════════════
+let lbCurSlide = 0;
+
+function buildLbSlides(media) {
+  const imgEl = document.getElementById('lbImg');
+  imgEl.innerHTML = '';
+  lbCurSlide = 0;
+
+  media.forEach((m, i) => {
+    const slide = document.createElement('div');
+    slide.className = 'lb-slide' + (i === 0 ? ' active' : '');
+    slide.innerHTML = m.type === 'img'
+      ? `<img src="${m.src}" alt=""/>`
+      : `<video src="${m.src}" autoplay muted loop playsinline></video>`;
+    imgEl.appendChild(slide);
+  });
+
+  if (media.length > 1) {
+    const prev = document.createElement('button');
+    prev.className = 'lb-prev';
+    prev.innerHTML = '&#8249;';
+    prev.onclick = e => { e.stopPropagation(); lbSlideMove(-1); };
+    imgEl.appendChild(prev);
+
+    const next = document.createElement('button');
+    next.className = 'lb-next';
+    next.innerHTML = '&#8250;';
+    next.onclick = e => { e.stopPropagation(); lbSlideMove(1); };
+    imgEl.appendChild(next);
+
+    const dotsWrap = document.createElement('div');
+    dotsWrap.className = 'lb-dots';
+    media.forEach((_, i) => {
+      const dot = document.createElement('button');
+      dot.className = 'lb-dot' + (i === 0 ? ' active' : '');
+      dot.onclick = e => { e.stopPropagation(); lbGoSlide(i); };
+      dotsWrap.appendChild(dot);
+    });
+    imgEl.appendChild(dotsWrap);
+  }
+}
+
+function lbGoSlide(n) {
+  const slides = document.querySelectorAll('#lbImg .lb-slide');
+  const dots   = document.querySelectorAll('#lbImg .lb-dot');
+  if (slides[lbCurSlide]) slides[lbCurSlide].classList.remove('active');
+  if (dots[lbCurSlide])   dots[lbCurSlide].classList.remove('active');
+  lbCurSlide = (n + slides.length) % slides.length;
+  if (slides[lbCurSlide]) slides[lbCurSlide].classList.add('active');
+  if (dots[lbCurSlide])   dots[lbCurSlide].classList.add('active');
+}
+
+function lbSlideMove(d) { lbGoSlide(lbCurSlide + d); }
+
+// ══════════════════════════════════════
+// LIGHTBOX OPEN / CLOSE
+// ══════════════════════════════════════
+function openLb(ev) {
+  buildLbSlides(ev.media);
+
+  const hasText = ev.title || ev.desc || ev.date || ev.location;
+  document.getElementById('lightboxCard').classList.toggle('media-only', !hasText);
+
+  document.getElementById('lbTag').textContent    = ev.upcoming ? 'Upcoming Event' : (ev.categories.includes('events') ? 'Past Event' : 'Gallery');
+  document.getElementById('lbTitle').textContent  = ev.title  || '';
+  document.getElementById('lbDesc').textContent   = ev.desc   || '';
+  document.getElementById('lbDivider').style.display = ev.desc ? '' : 'none';
+
+  let metaHtml = '';
+  if (ev.date)     metaHtml += `<div class="lb-meta-row"><span class="lb-meta-label">Date</span><span>${ev.date}</span></div>`;
+  if (ev.location) metaHtml += `<div class="lb-meta-row"><span class="lb-meta-label">Where</span><span>${ev.location}</span></div>`;
+  document.getElementById('lbMeta').innerHTML = metaHtml;
+
+  document.getElementById('lightbox').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLb() {
+  document.querySelectorAll('#lbImg video').forEach(v => { v.pause(); v.currentTime = 0; });
+  document.getElementById('lightbox').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+function handleLbClick(e) {
+  if (e.target === document.getElementById('lightbox')) closeLb();
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape')     closeLb();
+  if (e.key === 'ArrowLeft')  lbSlideMove(-1);
+  if (e.key === 'ArrowRight') lbSlideMove(1);
+});
+
+// ══════════════════════════════════════
+// MOBILE MENU
+// ══════════════════════════════════════
+function toggleMenu() {
+  document.getElementById('hamburger').classList.toggle('open');
+  document.getElementById('mobileMenu').classList.toggle('open');
+  document.body.style.overflow = document.getElementById('mobileMenu').classList.contains('open') ? 'hidden' : '';
+}
+
+renderGrid('all');
+</script>
+</body>
+</html>

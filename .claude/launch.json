@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "mud-and-meadows",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["C:\\Users\\quinn\\Downloads\\mudandmeadows\\serve.js"],
+      "port": 3000
+    }
+  ]
+}

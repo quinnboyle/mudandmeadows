@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Calendar · Mud & Meadows</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+    :root {
+      --cream:#f2ece2; --warm-white:#faf7f2; --brown:#3a2e26;
+      --mid-brown:#7a6a5a; --gold:#c9a97a; --light-gold:#e8d5b0; --green:#6b8f47;
+    }
+    html { scroll-behavior:smooth; }
+    body { font-family:'Jost',sans-serif; background:var(--warm-white); color:var(--brown); overflow-x:hidden; }
+
+    /* ── NAV ── */
+    nav { position:fixed; top:0; left:0; right:0; z-index:100; display:flex; align-items:center; justify-content:space-between; padding:16px 48px; background:rgba(242,236,226,0.94); backdrop-filter:blur(8px); border-bottom:1px solid rgba(201,169,122,0.2); }
+    .nav-logo { display:flex; align-items:center; text-decoration:none; }
+    .nav-logo-img { height:90px; width:90px; object-fit:contain; display:block; }
+    .nav-links { display:flex; gap:40px; list-style:none; }
+    .nav-links a { text-decoration:none; font-size:0.8rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--brown); font-weight:300; transition:color 0.2s; position:relative; }
+    .nav-links a::after { content:''; position:absolute; bottom:-3px; left:0; right:0; height:1px; background:var(--gold); transform:scaleX(0); transition:transform 0.3s; }
+    .nav-links a:hover, .nav-links a.active { color:var(--gold); }
+    .nav-links a:hover::after, .nav-links a.active::after { transform:scaleX(1); }
+    .hamburger { display:none; flex-direction:column; gap:5px; cursor:pointer; background:none; border:none; padding:4px; }
+    .hamburger span { width:24px; height:1.5px; background:var(--brown); transition:all 0.3s; display:block; }
+    .hamburger.open span:nth-child(1) { transform:rotate(45deg) translate(4px,4px); }
+    .hamburger.open span:nth-child(2) { opacity:0; }
+    .hamburger.open span:nth-child(3) { transform:rotate(-45deg) translate(4px,-4px); }
+    .mobile-menu { display:none; position:fixed; inset:0; background:var(--cream); z-index:99; flex-direction:column; align-items:center; justify-content:center; gap:40px; }
+    .mobile-menu.open { display:flex; }
+    .mobile-menu a { font-family:'Cormorant Garamond',serif; font-size:2.4rem; text-decoration:none; color:var(--brown); font-weight:300; transition:color 0.2s; }
+    .mobile-menu a:hover { color:var(--gold); }
+
+    /* ── PAGE HERO ── */
+    .page-hero { background:var(--cream); padding:130px 60px 64px; text-align:center; }
+    .page-tag { font-size:0.68rem; letter-spacing:0.22em; text-transform:uppercase; color:var(--gold); font-weight:500; margin-bottom:14px; display:flex; align-items:center; justify-content:center; gap:14px; }
+    .page-tag::before,.page-tag::after { content:''; width:40px; height:1px; background:var(--light-gold); }
+    .page-hero h1 { font-family:'Cormorant Garamond',serif; font-size:clamp(2.6rem,6vw,4.5rem); font-weight:300; letter-spacing:0.08em; color:var(--brown); margin-bottom:14px; }
+    .page-hero p { font-size:0.92rem; font-weight:300; color:var(--mid-brown); max-width:480px; margin:0 auto; line-height:1.8; }
+
+    /* ── MAIN LAYOUT ── */
+    .cal-page { padding:60px 60px 100px; max-width:1300px; margin:0 auto; display:grid; grid-template-columns:1fr 360px; gap:48px; align-items:start; }
+
+    /* ── CALENDAR PANEL ── */
+    .cal-panel {}
+    .cal-nav { display:flex; align-items:center; justify-content:space-between; margin-bottom:28px; }
+    .cal-nav button { background:none; border:1.5px solid var(--light-gold); color:var(--brown); width:38px; height:38px; border-radius:50%; cursor:pointer; font-size:1.1rem; display:flex; align-items:center; justify-content:center; transition:all 0.2s; }
+    .cal-nav button:hover { background:var(--gold); border-color:var(--gold); color:#fff; }
+    .cal-month-label { font-family:'Cormorant Garamond',serif; font-size:2rem; font-weight:300; letter-spacing:0.08em; }
+    .cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:6px; }
+    .cal-dow { text-align:center; font-size:0.68rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--mid-brown); padding:8px 0 14px; font-weight:400; }
+    .cal-day {
+      height:88px; border-radius:12px; padding:10px 8px 8px;
+      background:var(--warm-white); transition:background 0.2s, box-shadow 0.2s;
+      cursor:default; overflow:hidden;
+    }
+    .cal-day.other-month { background:transparent; opacity:0.28; }
+    .cal-day.today { background:#fff; box-shadow:0 0 0 1.5px var(--gold); }
+    .cal-day.has-event { cursor:pointer; }
+    .cal-day.has-event:hover { background:#fff; box-shadow:0 4px 18px rgba(90,60,30,0.10); }
+    .cal-day.selected { background:#fff; box-shadow:0 0 0 2px var(--gold); }
+    .cal-day-num { font-size:0.8rem; font-weight:400; color:var(--mid-brown); margin-bottom:5px; }
+    .cal-day.today .cal-day-num { color:var(--gold); font-weight:600; }
+    .cal-day.selected .cal-day-num { color:var(--brown); font-weight:500; }
+    .cal-event-pill {
+      font-size:0.62rem; background:var(--light-gold); color:var(--brown);
+      border-radius:4px; padding:2px 6px; margin-top:3px; white-space:nowrap;
+      overflow:hidden; text-overflow:ellipsis; display:block; font-weight:400;
+      letter-spacing:0.02em;
+    }
+    .cal-day.selected .cal-event-pill { background:var(--gold); color:#fff; }
+
+    /* ── EVENT DETAIL PANEL ── */
+    .event-detail {
+      position:sticky; top:100px;
+      background:var(--cream);
+      border-radius:18px;
+      padding:40px 36px;
+      min-height:340px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      transition:all 0.3s ease;
+    }
+    .event-detail.empty { align-items:center; text-align:center; }
+    .detail-empty-msg { }
+    .detail-empty-icon { font-size:2.8rem; margin-bottom:18px; opacity:0.35; }
+    .detail-empty-text { font-family:'Cormorant Garamond',serif; font-size:1.3rem; font-weight:300; color:var(--mid-brown); line-height:1.5; }
+
+    /* Populated state */
+    .detail-tag { font-size:0.65rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--gold); font-weight:500; margin-bottom:14px; }
+    .detail-title { font-family:'Cormorant Garamond',serif; font-size:1.9rem; font-weight:400; color:var(--brown); line-height:1.2; margin-bottom:18px; }
+    .detail-divider { width:44px; height:1px; background:var(--gold); margin-bottom:20px; }
+    .detail-desc { font-size:0.88rem; font-weight:300; color:var(--mid-brown); line-height:1.9; margin-bottom:24px; flex:1; }
+    .detail-meta { display:flex; flex-direction:column; gap:10px; padding-top:20px; border-top:1px solid rgba(201,169,122,0.3); }
+    .detail-meta-row { display:flex; align-items:center; gap:10px; font-size:0.82rem; font-weight:300; color:var(--mid-brown); }
+    .detail-meta-label { font-size:0.65rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--gold); font-weight:500; min-width:60px; }
+    .detail-signup { display:inline-block; margin-top:24px; padding:11px 28px; border:1.5px solid var(--gold); background:var(--light-gold); color:var(--brown); text-decoration:none; font-size:0.75rem; letter-spacing:0.16em; text-transform:uppercase; font-weight:400; border-radius:40px; transition:background 0.3s, color 0.3s, transform 0.2s; align-self:flex-start; cursor:pointer; }
+    .detail-signup:hover { background:var(--gold); color:#fff; transform:translateY(-2px); }
+
+    /* Fade animation */
+    .event-detail.populated { animation: fadeIn 0.35s ease; }
+    @keyframes fadeIn { from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);} }
+
+    /* ── FOOTER ── */
+    footer { background:var(--brown); color:var(--cream); text-align:center; padding:56px 40px; }
+    footer .f-logo { font-family:'Cormorant Garamond',serif; font-size:1.8rem; font-weight:300; letter-spacing:0.15em; margin-bottom:8px; }
+    footer .f-sub { font-size:0.78rem; font-weight:300; letter-spacing:0.1em; color:var(--gold); margin-bottom:32px; }
+    footer .f-links { display:flex; gap:32px; justify-content:center; list-style:none; margin-bottom:36px; flex-wrap:wrap; }
+    footer .f-links a { text-decoration:none; color:#d9cfc4; font-size:0.78rem; letter-spacing:0.1em; text-transform:uppercase; font-weight:300; transition:color 0.2s; }
+    footer .f-links a:hover { color:var(--gold); }
+    footer .f-copy { font-size:0.72rem; color:#7a6a5a; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width:960px) {
+      nav { padding:14px 24px; }
+      .nav-links { display:none; }
+      .hamburger { display:flex; }
+      .cal-page { grid-template-columns:1fr; padding:40px 20px 80px; gap:32px; }
+      .event-detail { position:static; }
+      .page-hero { padding:110px 28px 48px; }
+    }
+    @media (max-width:520px) {
+      .cal-day { height:54px; padding:6px 4px; overflow:hidden; }
+      .cal-event-pill { display:none; }
+      .cal-day.has-event .cal-day-num::after { content:' •'; color:var(--gold); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="mud-and-meadows.html">
+    <img src="images/img_5dea61d2.png" alt="Mud &amp; Meadows" class="nav-logo-img"/>
+  </a>
+  <ul class="nav-links">
+    <li><a href="about.html">About Us</a></li>
+    <li><a href="events.html">Gallery</a></li>
+    <li><a href="calendar.html" class="active">Calendar</a></li>
+  </ul>
+  <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="about.html" onclick="toggleMenu()">About Us</a>
+  <a href="events.html" onclick="toggleMenu()">Gallery</a>
+  <a href="calendar.html" onclick="toggleMenu()">Calendar</a>
+</div>
+
+<!-- PAGE HERO -->
+<section class="page-hero">
+  <div class="page-tag">Plan Your Visit</div>
+  <h1>Upcoming Events</h1>
+  <p>Click any date on the calendar to see event details and sign up for your spot.</p>
+</section>
+
+<!-- CALENDAR + DETAIL -->
+<div class="cal-page">
+
+  <!-- Left: Calendar -->
+  <div class="cal-panel">
+    <div class="cal-nav">
+      <button onclick="calMove(-1)">&#8249;</button>
+      <span class="cal-month-label" id="calLabel"></span>
+      <button onclick="calMove(1)">&#8250;</button>
+    </div>
+    <div class="cal-grid" id="calGrid"></div>
+  </div>
+
+  <!-- Right: Event detail -->
+  <div class="event-detail empty" id="eventDetail">
+    <div class="detail-empty-msg">
+      <div class="detail-empty-icon">&#x1F343;</div>
+      <div class="detail-empty-text">Select an event date<br>to see details</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="f-logo">Mud & Meadows</div>
+  <div class="f-sub">Pop-up pottery, crafts & florals · Maryland</div>
+  <ul class="f-links">
+    <li><a href="about.html">About Us</a></li>
+    <li><a href="events.html">Gallery</a></li>
+    <li><a href="calendar.html">Calendar</a></li>
+    <li><a href="#">Contact</a></li>
+  </ul>
+  <div class="f-socials"><a href="https://www.instagram.com/mud_and_meadows/" target="_blank" rel="noopener" class="f-social-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg> @mud_and_meadows</a></div>
+  <div class="f-copy">© 2025 Mud & Meadows · All rights reserved</div>
+</footer>
+
+<script>
+// ══════════════════════════════════════
+// EVENT DATA — add your events here
+// ══════════════════════════════════════
+const calEvents = [
+  // ── UPCOMING ──────────────────────────────
+  {
+    date: '2026-03-13',
+    title: 'Shamrock & Smoke: A Hat Burning Event',
+    desc: "We love a good cowboy hat — but can you imagine one that's completely customized to you? Join us for a special Hat Burning Event where you'll create your own custom, one-of-a-kind hat. Ticket includes all materials, heavy hors d'oeuvres, two specialty cocktails, and 10% off all boutique shopping during the event.",
+    time: '6:00 PM – 9:00 PM',
+    location: 'Southern Wind Boutique, 9375 Chesapeake St. Suite 125, La Plata, Maryland',
+    spots: 'Limited spots — SOLD OUT within 24 hours',
+    price: null,
+    signup: null,
+    status: 'sold_out'
+  },
+  {
+    date: '2026-04-05',
+    title: 'Easter Mugs',
+    desc: 'Paint your own ceramic mug in a festive Easter theme. A perfect Easter activity for yourself or as a gift for someone special.',
+    time: '3:00 PM – 5:30 PM',
+    location: 'TBA, Maryland',
+    spots: 'Limited spots available',
+    price: null,
+    signup: '#',
+    status: 'upcoming'
+  },
+  {
+    date: '2026-04-19',
+    title: 'Spring Pop-up',
+    desc: 'Our seasonal pop-up is back! Shop handmade ceramics, join a mini workshop, and enjoy a beautiful spring evening with us.',
+    time: '12:00 PM – 5:00 PM',
+    location: 'TBA, Maryland',
+    spots: 'Open to all',
+    price: null,
+    signup: '#',
+    status: 'upcoming'
+  },
+  {
+    date: '2026-05-10',
+    title: "Mother's Day Workshop",
+    desc: "Treat yourself or bring mom for a special Mother's Day ceramics evening. Create a keepsake to cherish — wine and good company included.",
+    time: '5:00 PM – 7:30 PM',
+    location: 'TBA, Maryland',
+    spots: 'Limited spots available',
+    price: null,
+    signup: '#',
+    status: 'upcoming'
+  },
+  {
+    date: '2026-05-24',
+    title: 'Garden Party',
+    desc: 'A dreamy outdoor pop-up at a local garden center. Paint planters, make floral arrangements, and enjoy the best of spring in the DMV.',
+    time: '11:00 AM – 4:00 PM',
+    location: 'TBA, Maryland',
+    spots: 'Open to all',
+    price: null,
+    signup: '#',
+    status: 'upcoming'
+  },
+  // ── PAST 2026 ─────────────────────────────
+  {
+    date: '2026-03-08',
+    title: 'Pop-Up Paint Party — Paint Your Own Pitcher-Vase',
+    desc: "Enjoy a creative experience at Wood Wire & Whimsy! Join us inside our world of whimsy for a relaxed, hands-on workshop where you'll paint a handmade ceramic piece designed two ways — as a pitcher or a vase. Paint it. Pour it. Style it.",
+    time: '2:00 PM – 4:00 PM',
+    location: 'Wood Wire & Whimsy',
+    spots: 'Limited spots available',
+    price: '$50.00 per ticket',
+    signup: 'https://www.simpletix.com/e/pop-up-paint-party-at-wood-wire-whimsy-tickets-258564',
+    status: 'past'
+  },
+  {
+    date: '2026-02-10',
+    title: 'Galentini Night Out — Paint Your Own Ceramic Espresso Martini Glass',
+    desc: "Sip. Paint. Repeat. You're invited to Galentini Night Out! Join us for a girls' night out where you'll paint your own ceramic espresso martini glass. Ticket includes one espresso martini and a ceramic martini glass to paint.",
+    time: '6:00 PM – 7:30 PM',
+    location: 'Courthaus Social',
+    spots: 'Limited spots available',
+    price: '$65.00 per ticket',
+    signup: 'https://www.simpletix.com/e/galentini-night-out-mud-meadows-tickets-252772',
+    status: 'past'
+  },
+  {
+    date: '2026-02-12',
+    title: "Southern Wind Galentine's Pottery Party",
+    desc: "Let's celebrate the girls! Come paint pottery with us and your Galentines. Paint your own ceramic martini glass while you enjoy the most delicious drinks from Tipsy Spirits. The perfect girls' night out!",
+    time: '6:00 PM – 9:00 PM',
+    location: 'Southern Wind Boutique, La Plata, Maryland',
+    spots: 'Limited spots — SOLD OUT',
+    price: '$90.00 per ticket (includes pottery + drinks)',
+    signup: null,
+    status: 'sold_out'
+  },
+  {
+    date: '2026-02-13',
+    title: 'Galentines at Stone Silo — Paint Your Own Ceramic Heart Trinket Dish',
+    desc: "You are invited to Galentines at Stone Silo! Join Mud & Meadows at Stone Silo Brewery to paint your own ceramic heart trinket dish. Comes with a Stone Silo beverage.",
+    time: '6:30 PM – 8:00 PM',
+    location: 'Stone Silo Brewery',
+    spots: 'Limited spots available',
+    price: '$45.00 per ticket',
+    signup: 'https://www.simpletix.com/e/heart-shaped-trinket-dish-tickets-254076',
+    status: 'past'
+  },
+  {
+    date: '2026-02-18',
+    title: "Paint Your Own Garlic Grater at Mully's Brewery",
+    desc: "Get Grate-ful & Get Creative! Come join us at Mully's Brewery to paint your own garlic grater — something cute and functional for your kitchen. Comes with one Mully's beverage.",
+    time: '6:00 PM – 8:30 PM',
+    location: "Mully's Brewery",
+    spots: 'Limited spots available',
+    price: '$45.00 per ticket (includes pottery piece + one beverage)',
+    signup: 'https://www.simpletix.com/e/mud-meadows-garlic-graters-event-tickets-253957',
+    status: 'past'
+  },
+  {
+    date: '2026-02-20',
+    title: 'Paint Your Own Tumbler Mug',
+    desc: "Paint your own iconic tumbler mug — the mug everyone's obsessed with! Sip, paint, and make it uniquely yours. Ticket includes one tumbler to paint and a Sweet Shop beverage.",
+    time: '6:00 PM – 7:30 PM',
+    location: 'The Sweet Little Shop, 2990 Parkers Creek Rd, Port Republic, MD',
+    spots: 'Limited spots available',
+    price: '$45.00 per ticket',
+    signup: 'https://www.simpletix.com/e/tumbler-mugs-event-tickets-253946',
+    status: 'past'
+  },
+  {
+    date: '2026-02-21',
+    title: 'Paint Your Own Ceramic Mini Fish Plate',
+    desc: "Come join us at our favorite place, Hook & Vine, to paint your own ceramic mini fish plate. Can't wait to get hooked on creating! Comes with a Hook & Vine beverage.",
+    time: '2:00 PM – 4:00 PM',
+    location: 'Hook & Vine',
+    spots: 'Limited spots available',
+    price: '$45.00 per ticket',
+    signup: 'https://www.simpletix.com/e/mini-fish-plate-event-tickets-253985',
+    status: 'past'
+  },
+  // ── PAST 2025 ─────────────────────────────
+  {
+    date: '2025-12-06',
+    title: 'Christmas Pottery Night',
+    desc: "Come paint Christmas pottery with us! An evening of creativity, good food, and festive fun. Paint your own Christmas mug + saucer, enjoy two refreshments from Tipsy Spirits, and indulge in a catered Italian meal. Take home your hand-painted pieces — the cutest keepsake or gift!",
+    time: '6:00 PM – 9:00 PM',
+    location: 'Southern Wind Boutique, 9375 Chesapeake St. #125, La Plata, Maryland',
+    spots: 'Limited spots — SOLD OUT',
+    price: '$90.00 per ticket (includes pottery, drinks, dinner)',
+    signup: null,
+    status: 'past'
+  },
+  {
+    date: '2025-12-14',
+    title: 'Paint Your Own Christmas Ornaments — Stone Silo Brewery',
+    desc: "Paint your own Christmas ornaments at Stone Silo Brewery! Choose 3 ceramics to paint and enjoy one festive drink on us. Finished ornaments are fired and ready for pickup. 200+ handmade ornaments, 30 amazing people, and the perfect cozy snow-globe setting by the fire.",
+    time: '3:00 PM – 6:00 PM',
+    location: 'Stone Silo Brewery, Annapolis area',
+    spots: 'Limited spots — SOLD OUT',
+    price: 'Includes 3 ceramics + 1 festive drink',
+    signup: null,
+    status: 'past'
+  },
+  {
+    date: '2025-12-01',
+    title: 'Christmas Ornament Painting Classes — The Lobby Coffee Bar',
+    desc: "Paint your own handmade ceramic Christmas ornaments at The Lobby Coffee Bar! This event sold out in under 24 hours two years in a row. Extra classes were added to meet demand. A festive and creative holiday experience you won't want to miss.",
+    time: 'Multiple dates — November & December',
+    location: 'The Lobby Coffee Bar',
+    spots: 'Limited spots — SOLD OUT (extra classes added)',
+    price: null,
+    signup: 'https://www.simpletix.com/e/mud-meadows-the-lobby-bar-cafe-christmas-o-tickets-245423',
+    status: 'past'
+  },
+  {
+    date: '2025-12-20',
+    title: "Cardinal Creek Plant Farm — 6th Annual Holiday Market",
+    desc: "Mud & Meadows vended handmade pottery and crafts at Cardinal Creek Plant Farm's 6th Annual Holiday Market. A wonderful community market full of local makers and seasonal goods.",
+    time: 'Market hours',
+    location: 'Cardinal Creek Plant Farm',
+    spots: 'Open to all — free to attend',
+    price: null,
+    signup: null,
+    status: 'past'
+  },
+];
+
+// ══════════════════════════════════════
+// CALENDAR RENDER
+// ══════════════════════════════════════
+const MNAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const DNAMES = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const now    = new Date();
+let calY     = now.getFullYear();
+let calM     = now.getMonth();
+let selected = null;
+
+// Build a lookup map: date string → event object
+function buildMap() {
+  const map = {};
+  calEvents.forEach(ev => { map[ev.date] = ev; });
+  return map;
+}
+
+function renderCal() {
+  document.getElementById('calLabel').textContent = MNAMES[calM] + ' ' + calY;
+  const grid    = document.getElementById('calGrid');
+  grid.innerHTML = '';
+  const eMap    = buildMap();
+
+  // Day headers
+  DNAMES.forEach(d => {
+    const el = document.createElement('div');
+    el.className   = 'cal-dow';
+    el.textContent = d;
+    grid.appendChild(el);
+  });
+
+  const firstDay  = new Date(calY, calM, 1).getDay();
+  const dim       = new Date(calY, calM + 1, 0).getDate();
+  const prevDim   = new Date(calY, calM, 0).getDate();
+
+  // Prev month overflow
+  for (let i = 0; i < firstDay; i++) {
+    const el = document.createElement('div');
+    el.className   = 'cal-day other-month';
+    el.innerHTML   = `<div class="cal-day-num">${prevDim - firstDay + 1 + i}</div>`;
+    grid.appendChild(el);
+  }
+
+  // Current month
+  for (let d = 1; d <= dim; d++) {
+    const mm  = String(calM + 1).padStart(2, '0');
+    const dd  = String(d).padStart(2, '0');
+    const key = `${calY}-${mm}-${dd}`;
+    const ev  = eMap[key];
+    const isToday    = d === now.getDate() && calM === now.getMonth() && calY === now.getFullYear();
+    const isSelected = key === selected;
+
+    const el = document.createElement('div');
+    el.className = 'cal-day'
+      + (isToday    ? ' today'     : '')
+      + (ev         ? ' has-event' : '')
+      + (isSelected ? ' selected'  : '');
+
+    let html = `<div class="cal-day-num">${d}</div>`;
+    if (ev) html += `<div class="cal-event-pill">${ev.title}</div>`;
+    el.innerHTML = html;
+
+    if (ev) {
+      el.addEventListener('click', () => selectEvent(key, ev, el));
+    }
+    grid.appendChild(el);
+  }
+
+  // Next month overflow
+  const rem = (firstDay + dim) % 7 === 0 ? 0 : 7 - (firstDay + dim) % 7;
+  for (let i = 1; i <= rem; i++) {
+    const el = document.createElement('div');
+    el.className   = 'cal-day other-month';
+    el.innerHTML   = `<div class="cal-day-num">${i}</div>`;
+    grid.appendChild(el);
+  }
+}
+
+function calMove(dir) {
+  calM += dir;
+  if (calM > 11) { calM = 0; calY++; }
+  if (calM < 0)  { calM = 11; calY--; }
+  renderCal();
+}
+
+// ══════════════════════════════════════
+// EVENT DETAIL PANEL
+// ══════════════════════════════════════
+function selectEvent(key, ev, clickedEl) {
+  // Deselect previous
+  document.querySelectorAll('.cal-day.selected').forEach(el => el.classList.remove('selected'));
+  clickedEl.classList.add('selected');
+  selected = key;
+
+  // Format date nicely
+  const [y, m, d] = key.split('-').map(Number);
+  const dateObj   = new Date(y, m - 1, d);
+  const dateStr   = dateObj.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric', year:'numeric' });
+
+  // Status label
+  const tagLabel = ev.status === 'past' ? 'Past Event'
+                 : ev.status === 'sold_out' ? 'Sold Out'
+                 : 'Upcoming Event';
+
+  // Price row
+  const priceRow = ev.price ? `
+      <div class="detail-meta-row">
+        <span class="detail-meta-label">Price</span>
+        <span>${ev.price}</span>
+      </div>` : '';
+
+  // Spots row (skip if null)
+  const spotsRow = ev.spots ? `
+      <div class="detail-meta-row">
+        <span class="detail-meta-label">Spots</span>
+        <span>${ev.spots}</span>
+      </div>` : '';
+
+  // Button — always show link if one exists, regardless of sold-out status
+  let btnHtml = '';
+  if (ev.signup && ev.signup !== '#') {
+    const btnText = ev.status === 'sold_out' ? 'View Event — Sold Out' : ev.status === 'past' ? 'View Event' : 'Get Tickets';
+    btnHtml = `<a href="${ev.signup}" target="_blank" rel="noopener" class="detail-signup">${btnText}</a>`;
+  } else if (ev.status === 'sold_out') {
+    btnHtml = `<span class="detail-signup" style="opacity:0.5;cursor:default;background:var(--light-gold);pointer-events:none;">Sold Out</span>`;
+  } else if (ev.signup === '#') {
+    btnHtml = `<a href="${ev.signup}" class="detail-signup">Reserve Your Spot</a>`;
+  }
+
+  const panel = document.getElementById('eventDetail');
+  panel.className = 'event-detail populated';
+  panel.innerHTML = `
+    <div class="detail-tag">${tagLabel}</div>
+    <div class="detail-title">${ev.title}</div>
+    <div class="detail-divider"></div>
+    <div class="detail-desc">${ev.desc}</div>
+    <div class="detail-meta">
+      <div class="detail-meta-row">
+        <span class="detail-meta-label">Date</span>
+        <span>${dateStr}</span>
+      </div>
+      <div class="detail-meta-row">
+        <span class="detail-meta-label">Time</span>
+        <span>${ev.time}</span>
+      </div>
+      <div class="detail-meta-row">
+        <span class="detail-meta-label">Where</span>
+        <span>${ev.location}</span>
+      </div>
+      ${priceRow}
+      ${spotsRow}
+    </div>
+    ${btnHtml}
+  `;
+}
+
+// ══════════════════════════════════════
+// MOBILE MENU
+// ══════════════════════════════════════
+function toggleMenu() {
+  document.getElementById('hamburger').classList.toggle('open');
+  document.getElementById('mobileMenu').classList.toggle('open');
+  document.body.style.overflow = document.getElementById('mobileMenu').classList.contains('open') ? 'hidden' : '';
+}
+
+renderCal();
+</script>
+</body>
+</html>

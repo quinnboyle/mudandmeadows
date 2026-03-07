@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Past Events · Mud & Meadows</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+    :root {
+      --cream:#f2ece2; --warm-white:#faf7f2; --brown:#3a2e26;
+      --mid-brown:#7a6a5a; --gold:#c9a97a; --light-gold:#e8d5b0;
+    }
+    html { scroll-behavior:smooth; }
+    body { font-family:'Jost',sans-serif; background:var(--warm-white); color:var(--brown); overflow-x:hidden; }
+
+    /* NAV */
+    nav { position:fixed; top:0; left:0; right:0; z-index:100; display:flex; align-items:center; justify-content:space-between; padding:16px 48px; background:rgba(242,236,226,0.94); backdrop-filter:blur(8px); border-bottom:1px solid rgba(201,169,122,0.2); }
+    .nav-logo { display:flex; align-items:center; text-decoration:none; }
+    .nav-logo-img { height:42px; width:42px; object-fit:contain; display:block; }
+    .nav-links { display:flex; gap:40px; list-style:none; }
+    .nav-links a { text-decoration:none; font-size:0.8rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--brown); font-weight:300; transition:color 0.2s; position:relative; }
+    .nav-links a::after { content:''; position:absolute; bottom:-3px; left:0; right:0; height:1px; background:var(--gold); transform:scaleX(0); transition:transform 0.3s; }
+    .nav-links a:hover, .nav-links a.active { color:var(--gold); }
+    .nav-links a:hover::after, .nav-links a.active::after { transform:scaleX(1); }
+    .hamburger { display:none; flex-direction:column; gap:5px; cursor:pointer; background:none; border:none; padding:4px; }
+    .hamburger span { width:24px; height:1.5px; background:var(--brown); transition:all 0.3s; display:block; }
+    .hamburger.open span:nth-child(1) { transform:rotate(45deg) translate(4px,4px); }
+    .hamburger.open span:nth-child(2) { opacity:0; }
+    .hamburger.open span:nth-child(3) { transform:rotate(-45deg) translate(4px,-4px); }
+    .mobile-menu { display:none; position:fixed; inset:0; background:var(--cream); z-index:99; flex-direction:column; align-items:center; justify-content:center; gap:40px; }
+    .mobile-menu.open { display:flex; }
+    .mobile-menu a { font-family:'Cormorant Garamond',serif; font-size:2.4rem; text-decoration:none; color:var(--brown); font-weight:300; transition:color 0.2s; }
+    .mobile-menu a:hover { color:var(--gold); }
+
+    /* PAGE HERO */
+    .page-hero { background:var(--cream); padding:130px 60px 64px; text-align:center; }
+    .page-tag { font-size:0.68rem; letter-spacing:0.22em; text-transform:uppercase; color:var(--gold); font-weight:500; margin-bottom:14px; display:flex; align-items:center; justify-content:center; gap:14px; }
+    .page-tag::before,.page-tag::after { content:''; width:40px; height:1px; background:var(--light-gold); }
+    .page-hero h1 { font-family:'Cormorant Garamond',serif; font-size:clamp(2.6rem,6vw,4.5rem); font-weight:300; letter-spacing:0.08em; color:var(--brown); margin-bottom:14px; }
+    .page-hero p { font-size:0.92rem; font-weight:300; color:var(--mid-brown); max-width:480px; margin:0 auto; line-height:1.8; }
+
+    /* FILTER BAR */
+    .filter-bar { display:flex; justify-content:center; gap:12px; flex-wrap:wrap; padding:40px 40px 0; }
+    .filter-btn { padding:8px 22px; border:1.5px solid var(--light-gold); background:transparent; color:var(--mid-brown); font-family:'Jost',sans-serif; font-size:0.75rem; letter-spacing:0.12em; text-transform:uppercase; border-radius:40px; cursor:pointer; transition:all 0.25s; }
+    .filter-btn:hover, .filter-btn.active { background:var(--gold); border-color:var(--gold); color:#fff; }
+
+    /* MASONRY GRID */
+    .masonry-wrap { padding:48px 48px 100px; max-width:1400px; margin:0 auto; }
+    .masonry { columns:3; column-gap:20px; }
+    .masonry-item {
+      break-inside:avoid;
+      margin-bottom:20px;
+      border-radius:16px;
+      overflow:hidden;
+      position:relative;
+      cursor:pointer;
+      background:var(--cream);
+    }
+    .masonry-item img {
+      width:100%; display:block;
+      transition:transform 0.5s ease;
+    }
+    .masonry-item:hover img { transform:scale(1.04); }
+
+    /* Overlay on hover */
+    .masonry-overlay {
+      position:absolute; inset:0;
+      background:linear-gradient(to top, rgba(42,28,18,0.85) 0%, rgba(42,28,18,0) 55%);
+      opacity:0; transition:opacity 0.35s ease;
+      display:flex; flex-direction:column;
+      justify-content:flex-end;
+      padding:24px;
+    }
+    .masonry-item:hover .masonry-overlay { opacity:1; }
+    .masonry-overlay-tag { font-size:0.6rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--gold); font-weight:500; margin-bottom:6px; }
+    .masonry-overlay-title { font-family:'Cormorant Garamond',serif; font-size:1.3rem; font-weight:400; color:#fff; line-height:1.2; margin-bottom:4px; }
+    .masonry-overlay-date { font-size:0.75rem; font-weight:300; color:rgba(255,255,255,0.7); }
+
+    /* Placeholder tile (no photo) */
+    .masonry-placeholder {
+      width:100%; display:flex; align-items:center; justify-content:center;
+      font-size:3.5rem; min-height:220px;
+    }
+
+    /* Tall/short span control */
+    .masonry-item.tall img { min-height:420px; object-fit:cover; }
+    .masonry-item.short img { min-height:200px; object-fit:cover; }
+    .masonry-item.medium img { min-height:300px; object-fit:cover; }
+
+    /* Upcoming badge */
+    .upcoming-badge {
+      position:absolute; top:14px; left:14px;
+      background:var(--gold); color:#fff;
+      font-size:0.6rem; letter-spacing:0.14em; text-transform:uppercase;
+      padding:4px 10px; border-radius:20px; font-weight:500; z-index:2;
+    }
+
+    /* LIGHTBOX */
+    .lightbox { position:fixed; inset:0; background:rgba(20,12,6,0.88); z-index:300; display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity 0.3s; backdrop-filter:blur(8px); padding:20px; }
+    .lightbox.active { opacity:1; pointer-events:all; }
+    .lightbox-inner { position:relative; max-width:900px; width:100%; }
+    .lightbox-card { background:var(--brown); border-radius:20px; overflow:hidden; display:flex; max-height:88vh; }
+    .lightbox-img { flex:0 0 48%; overflow:hidden; }
+    .lightbox-img img { width:100%; height:100%; object-fit:cover; display:block; }
+    .lightbox-img .lb-placeholder { width:100%; height:100%; min-height:300px; display:flex; align-items:center; justify-content:center; font-size:5rem; background:var(--cream); }
+    .lightbox-body { flex:1; padding:40px 36px; overflow-y:auto; display:flex; flex-direction:column; color:var(--warm-white); }
+    .lightbox-body::-webkit-scrollbar { width:3px; }
+    .lightbox-body::-webkit-scrollbar-thumb { background:var(--gold); border-radius:4px; }
+    .lb-tag { font-size:0.65rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--gold); margin-bottom:12px; }
+    .lb-title { font-family:'Cormorant Garamond',serif; font-size:1.9rem; font-weight:400; line-height:1.2; margin-bottom:16px; }
+    .lb-divider { width:44px; height:1px; background:var(--gold); margin-bottom:18px; }
+    .lb-desc { font-size:0.88rem; font-weight:300; line-height:1.9; color:#d9cfc4; flex:1; margin-bottom:20px; }
+    .lb-meta { padding-top:18px; border-top:1px solid rgba(201,169,122,0.2); display:flex; flex-direction:column; gap:8px; }
+    .lb-meta-row { display:flex; gap:10px; font-size:0.8rem; font-weight:300; color:#d9cfc4; }
+    .lb-meta-label { font-size:0.62rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--gold); min-width:56px; margin-top:1px; }
+    .lb-close { position:absolute; top:-14px; right:-14px; background:var(--gold); border:none; color:#fff; font-size:1rem; width:34px; height:34px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background 0.2s,transform 0.2s; z-index:10; box-shadow:0 4px 16px rgba(0,0,0,0.3); }
+    .lb-close:hover { background:var(--brown); transform:rotate(90deg); }
+
+    /* FOOTER */
+    footer { background:var(--brown); color:var(--cream); text-align:center; padding:56px 40px; }
+    footer .f-logo { font-family:'Cormorant Garamond',serif; font-size:1.8rem; font-weight:300; letter-spacing:0.15em; margin-bottom:8px; }
+    footer .f-sub { font-size:0.78rem; font-weight:300; letter-spacing:0.1em; color:var(--gold); margin-bottom:32px; }
+    footer .f-links { display:flex; gap:32px; justify-content:center; list-style:none; margin-bottom:36px; flex-wrap:wrap; }
+    footer .f-links a { text-decoration:none; color:#d9cfc4; font-size:0.78rem; letter-spacing:0.1em; text-transform:uppercase; font-weight:300; transition:color 0.2s; }
+    footer .f-links a:hover { color:var(--gold); }
+    footer .f-copy { font-size:0.72rem; color:#7a6a5a; }
+
+    /* RESPONSIVE */
+    @media (max-width:900px) {
+      nav { padding:14px 24px; }
+      .nav-links { display:none; }
+      .hamburger { display:flex; }
+      .masonry { columns:2; }
+      .masonry-wrap { padding:32px 20px 80px; }
+      .page-hero { padding:110px 28px 48px; }
+      .lightbox-card { flex-direction:column; }
+      .lightbox-img { flex:none; height:240px; }
+    }
+    @media (max-width:520px) {
+      .masonry { columns:1; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="index.html">
+    <img src="images/img_5dea61d2.png" alt="Mud &amp; Meadows" class="nav-logo-img"/>
+  </a>
+  <ul class="nav-links">
+    <li><a href="about.html">About Us</a></li>
+    <li><a href="events.html" class="active">Events</a></li>
+    <li><a href="calendar.html">Calendar</a></li>
+  </ul>
+  <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="about.html" onclick="toggleMenu()">About Us</a>
+  <a href="events.html" onclick="toggleMenu()">Events</a>
+  <a href="calendar.html" onclick="toggleMenu()">Calendar</a>
+</div>
+
+<!-- PAGE HERO -->
+<section class="page-hero">
+  <div class="page-tag">Our Story So Far</div>
+  <h1>All Events</h1>
+  <p>Every pop-up, workshop, and gathering we've hosted — browse the full archive.</p>
+</section>
+
+<!-- FILTER -->
+<div class="filter-bar">
+  <button class="filter-btn active" onclick="filterEvents('all', this)">All</button>
+  <button class="filter-btn" onclick="filterEvents('pottery', this)">Pottery</button>
+  <button class="filter-btn" onclick="filterEvents('painting', this)">Painting</button>
+  <button class="filter-btn" onclick="filterEvents('workshop', this)">Workshops</button>
+  <button class="filter-btn" onclick="filterEvents('popup', this)">Pop-ups</button>
+</div>
+
+<!-- MASONRY GRID -->
+<div class="masonry-wrap">
+  <div class="masonry" id="masonryGrid"></div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="handleLbClick(event)">
+  <div class="lightbox-inner">
+    <button class="lb-close" onclick="closeLb()">&#10005;</button>
+    <div class="lightbox-card">
+      <div class="lightbox-img" id="lbImg"></div>
+      <div class="lightbox-body">
+        <div class="lb-tag" id="lbTag"></div>
+        <div class="lb-title" id="lbTitle"></div>
+        <div class="lb-divider"></div>
+        <div class="lb-desc" id="lbDesc"></div>
+        <div class="lb-meta" id="lbMeta"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="f-logo">Mud & Meadows</div>
+  <div class="f-sub">Pop-up pottery, crafts & florals · Maryland</div>
+  <ul class="f-links">
+    <li><a href="about.html">About Us</a></li>
+    <li><a href="events.html">Events</a></li>
+    <li><a href="calendar.html">Calendar</a></li>
+    <li><a href="#">Contact</a></li>
+  </ul>
+  <div class="f-socials"><a href="https://www.instagram.com/mud_and_meadows/" target="_blank" rel="noopener" class="f-social-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg> @mud_and_meadows</a></div>
+  <div class="f-copy">&#169; 2026 Mud & Meadows · All rights reserved</div>
+</footer>
+
+<script>
+// ══════════════════════════════════════
+// ALL EVENTS DATA
+// Add new events here as objects
+// ══════════════════════════════════════
+const allEvents = [
+  {
+    id:1,
+    title: 'Shamrock & Smoke — Hat Burning',
+    tag: 'Upcoming · March 13, 2026',
+    upcoming: true,
+    categories: ['workshop','popup'],
+    size: 'tall',
+    img: `images/img_4ef6dfab.png`,
+    desc: "Create your own custom, one-of-a-kind burned hat at Southern Wind Boutique. Enjoy two specialty cocktails from Tipsy Spirits, heavy hors d'oeuvres, and 10% off all boutique shopping. All materials included — space is limited!",
+    date: 'Friday, March 13, 2026',
+    time: '6:00 PM – 9:00 PM',
+    location: 'Southern Wind Boutique, 9375 Chesapeake St. #125, La Plata, MD',
+  },
+  {
+    id:2,
+    title: "Valentine's Mommy & Me Pottery Brunch",
+    tag: 'February 8, 2026',
+    categories: ['pottery','workshop'],
+    size: 'tall',
+    img: `images/img_58232607.png`,
+    desc: "A sweet Saturday morning of love, laughter, and Lobby Coffee. Each parent and child painted their own heart-shaped trinket dish together — a keepsake made with love. Pastries for the little ones, drinks for mom. This one sold out within 24 hours of going live!",
+    date: 'Saturday, February 8, 2026',
+    time: '10:00 AM – 12:00 PM',
+    location: 'Lobby Coffee, Maryland',
+  },
+  {
+    id:3,
+    title: 'Tumbler Painting at The Sweet Little Shop',
+    tag: '2026',
+    categories: ['painting','popup'],
+    size: 'medium',
+    img: null,
+    placeholder: { emoji:'&#9749;', bg:'#c8b89a' },
+    desc: "Each guest painted their own ceramic tumbler mug to take home and enjoyed a cupcake from Sweet Poetry Cakery, then shopped the rest of the night away. Such a beautiful evening at The Sweet Little Shop!",
+    date: '2026',
+    location: 'The Sweet Little Shop, Maryland',
+  },
+  {
+    id:4,
+    title: 'Christmas Ornament Workshop',
+    tag: 'December 2024',
+    categories: ['pottery','workshop'],
+    size: 'medium',
+    img: 'https://quinnboyle237-azpfb.wpcomstaging.com/wp-content/uploads/2025/11/christmas-1.png?w=700',
+    desc: "A festive hands-on workshop where guests crafted their own ceramic Christmas ornaments to take home. Guided by our studio team, this magical evening was full of creativity, laughter, and holiday cheer. All skill levels welcome!",
+    date: 'December 2024',
+    location: 'Maryland',
+  },
+  {
+    id:5,
+    title: 'Christmas Ornament Workshop',
+    tag: 'December 2024',
+    categories: ['pottery','workshop'],
+    size: 'short',
+    img: 'https://quinnboyle237-azpfb.wpcomstaging.com/wp-content/uploads/2025/11/img_3882.jpeg?w=700',
+    desc: "More beautiful moments from our festive Christmas ornament workshop. Guests left with unique handmade ceramic pieces and big smiles.",
+    date: 'December 2024',
+    location: 'Maryland',
+  },
+  {
+    id:6,
+    title: 'Add Your Event Here',
+    tag: 'Past Event',
+    categories: ['popup'],
+    size: 'medium',
+    img: null,
+    placeholder: { emoji:'&#127796;', bg:'#b9c9a8' },
+    desc: 'Add a description of this event here.',
+    date: 'Month Year',
+    location: 'Maryland',
+  },
+  {
+    id:7,
+    title: 'Add Your Event Here',
+    tag: 'Past Event',
+    categories: ['pottery'],
+    size: 'tall',
+    img: null,
+    placeholder: { emoji:'&#127895;', bg:'#c9b8a8' },
+    desc: 'Add a description of this event here.',
+    date: 'Month Year',
+    location: 'Maryland',
+  },
+  {
+    id:8,
+    title: 'Add Your Event Here',
+    tag: 'Past Event',
+    categories: ['painting'],
+    size: 'short',
+    img: null,
+    placeholder: { emoji:'&#127912;', bg:'#d4c4a8' },
+    desc: 'Add a description of this event here.',
+    date: 'Month Year',
+    location: 'Maryland',
+  },
+];
+
+// ══════════════════════════════════════
+// RENDER MASONRY
+// ══════════════════════════════════════
+function renderGrid(filter) {
+  const grid = document.getElementById('masonryGrid');
+  grid.innerHTML = '';
+  const filtered = filter === 'all' ? allEvents : allEvents.filter(e => e.categories.includes(filter));
+
+  filtered.forEach((ev, i) => {
+    const item = document.createElement('div');
+    item.className = `masonry-item ${ev.size || 'medium'}`;
+    item.style.animationDelay = (i * 0.07) + 's';
+
+    const imgHtml = ev.img
+      ? `<img src="${ev.img}" alt="${ev.title}"/>`
+      : `<div class="masonry-placeholder" style="background:${ev.placeholder.bg}">${ev.placeholder.emoji}</div>`;
+
+    const badgeHtml = ev.upcoming
+      ? `<div class="upcoming-badge">Upcoming</div>` : '';
+
+    item.innerHTML = `
+      ${badgeHtml}
+      ${imgHtml}
+      <div class="masonry-overlay">
+        <div class="masonry-overlay-tag">${ev.tag}</div>
+        <div class="masonry-overlay-title">${ev.title}</div>
+      </div>
+    `;
+    item.addEventListener('click', () => openLb(ev));
+    grid.appendChild(item);
+  });
+}
+
+// ══════════════════════════════════════
+// FILTER
+// ══════════════════════════════════════
+function filterEvents(cat, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderGrid(cat);
+}
+
+// ══════════════════════════════════════
+// LIGHTBOX
+// ══════════════════════════════════════
+function openLb(ev) {
+  const imgEl = document.getElementById('lbImg');
+  imgEl.innerHTML = ev.img
+    ? `<img src="${ev.img}" alt="${ev.title}"/>`
+    : `<div class="lb-placeholder" style="background:${ev.placeholder?.bg || '#c9b8a8'}">${ev.placeholder?.emoji || ''}</div>`;
+
+  document.getElementById('lbTag').textContent = ev.upcoming ? 'Upcoming Event' : 'Past Event';
+  document.getElementById('lbTitle').textContent = ev.title;
+  document.getElementById('lbDesc').textContent = ev.desc;
+
+  let metaHtml = '';
+  if (ev.date)     metaHtml += `<div class="lb-meta-row"><span class="lb-meta-label">Date</span><span>${ev.date}</span></div>`;
+  if (ev.time)     metaHtml += `<div class="lb-meta-row"><span class="lb-meta-label">Time</span><span>${ev.time}</span></div>`;
+  if (ev.location) metaHtml += `<div class="lb-meta-row"><span class="lb-meta-label">Where</span><span>${ev.location}</span></div>`;
+  document.getElementById('lbMeta').innerHTML = metaHtml;
+
+  document.getElementById('lightbox').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLb() {
+  document.getElementById('lightbox').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+function handleLbClick(e) {
+  if (e.target === document.getElementById('lightbox')) closeLb();
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLb(); });
+
+// ══════════════════════════════════════
+// MOBILE MENU
+// ══════════════════════════════════════
+function toggleMenu() {
+  document.getElementById('hamburger').classList.toggle('open');
+  document.getElementById('mobileMenu').classList.toggle('open');
+  document.body.style.overflow = document.getElementById('mobileMenu').classList.contains('open') ? 'hidden' : '';
+}
+
+renderGrid('all');
+</script>
+</body>
+</html>
