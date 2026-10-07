@@ -243,7 +243,7 @@
     <img src="images/img_5dea61d2.png" alt="Mud &amp; Meadows" class="nav-logo-img"/>
   </a>
   <ul class="nav-links">
-    <li><a href="#">About Us</a></li>
+    <li><a href="about.html">About Us</a></li>
     <li><a href="events.html">Gallery</a></li>
     <li><a href="calendar.html">Calendar</a></li>
   </ul>
@@ -401,7 +401,7 @@
   <div class="f-logo">Mud & Meadows</div>
   <div class="f-sub">Pop-up pottery, crafts & florals · DMV</div>
   <ul class="f-links">
-    <li><a href="#">About Us</a></li><li><a href="events.html">Gallery</a></li>
+    <li><a href="about.html">About Us</a></li><li><a href="events.html">Gallery</a></li>
     <li><a href="calendar.html">Calendar</a></li><li><a href="#" onclick="openContact(event)">Contact</a></li>
   </ul>
   <div class="f-socials"><a href="https://www.instagram.com/mud_and_meadows/" target="_blank" rel="noopener" class="f-social-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg> @mud_and_meadows</a></div>
@@ -409,9 +409,9 @@
 </footer>
 
 <script>
-// Ã¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•Â
+// ══════════════════════════════════════
 // IVY ANIMATION — full-screen overlay
-// Ã¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•Â
+// ══════════════════════════════════════
 (function() {
   const canvas = document.getElementById('ivyCanvas');
   const ctx    = canvas.getContext('2d');
@@ -570,7 +570,7 @@
     // Use the baked stem-end t value — leaves NEVER go past this
     const LEAF_MAX = pts._stemT;
 
-    // Ã¢â€â‚¬Ã¢â€â‚¬ Stem Ã¢â€â‚¬Ã¢â€â‚¬
+    // ── Stem ──
     ctx.beginPath();
     const p0 = cr(pts, 0);
     ctx.moveTo(p0[0], p0[1]);
@@ -585,7 +585,7 @@
     ctx.lineJoin    = 'round';
     ctx.stroke();
 
-    // Ã¢â€â‚¬Ã¢â€â‚¬ Leaves strictly on stem only, never on curl Ã¢â€â‚¬Ã¢â€â‚¬
+    // ── Leaves strictly on stem only, never on curl ──
     for (let i = 0; i < MAX_LEAVES; i++) {
       // Space leaves evenly across the stem portion only
       const tBase = ((i + 1) / (MAX_LEAVES + 1)) * LEAF_MAX;
@@ -641,9 +641,9 @@
   requestAnimationFrame(animate);
 })();
 
-// Ã¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•Â
+// ══════════════════════════════════════
 // EVENT DATA
-// Ã¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•Â
+// ══════════════════════════════════════
 const eventsData = [
   {
     title:'Flower Farm Winery & Pottery Painting',
@@ -673,7 +673,7 @@ const eventsData = [
       {type:'img',   src:'images_web/galentines_PP1.jpg'},
       {type:'img',   src:'images_web/galentines_PP2.jpg'},
     ],
-    desc:"Come paint pottery with us and your Galentines! Ã°Å¸Â¥Â°Ã°Å¸â€™• Paint your own ceramic martini glass with @mud_and_meadows while you enjoy the most delicious drinks from @tipsy.spirits_ 🍸 Spots are limited — grab your girlfriends and make it a night. Held at Southern Wind Boutique on February 12.",
+    desc:"Come paint pottery with us and your Galentines! 🥰💕 Paint your own ceramic martini glass with @mud_and_meadows while you enjoy the most delicious drinks from @tipsy.spirits_ 🍸 Spots are limited — grab your girlfriends and make it a night. Held at Southern Wind Boutique on February 12.",
     date:'📅 February 12, 2026 · 6:00 PM – 9:00 PM', location:'📍 Southern Wind Boutique, DMV'
   },
   {
@@ -688,9 +688,9 @@ const eventsData = [
   },
 ];
 
-// Ã¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•Â
+// ══════════════════════════════════════
 // SLIDESHOW
-// Ã¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•Â
+// ══════════════════════════════════════
 let curSlide=0;
 
 function buildSlides(media) {
@@ -742,10 +742,10 @@ document.addEventListener('keydown',e=>{
   if(e.key==='ArrowRight')slideMove(1);
 });
 
-// Ã¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•Â
+// ══════════════════════════════════════
 // CALENDAR
-// Ã¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•Â
-// Ã¢â€ Â Add your future events here
+// ══════════════════════════════════════
+// ← Add your future events here
 const calEventsData=[
   {date:'2026-03-15',title:'Spring Workshop'},
   {date:'2026-03-22',title:'Floral Pottery'},
@@ -785,9 +785,9 @@ function renderCal(){
 function calMove(d){calM+=d;if(calM>11){calM=0;calY++;}if(calM<0){calM=11;calY--;}renderCal();}
 renderCal();
 
-// Ã¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•Â
+// ══════════════════════════════════════
 // MOBILE MENU & SCROLL REVEAL
-// Ã¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•Â
+// ══════════════════════════════════════
 function toggleMenu(){
   document.getElementById('hamburger').classList.toggle('open');
   document.getElementById('mobileMenu').classList.toggle('open');
